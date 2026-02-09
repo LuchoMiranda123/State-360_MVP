@@ -8,7 +8,7 @@ const DATA = {
     currentOrg: null,
     isLoggedIn: false,
     billingStatus: "paid",
-    
+
     orgs: [
         { id: 1, name: "Hommie Admin", plan: "Premium", units: 150, seats: 5, status: "Active" },
         { id: 2, name: "Edificios Miraflores", plan: "Premium", units: 45, seats: 3, status: "Active" }
@@ -51,14 +51,12 @@ const DATA = {
         { id: 3, name: "Kevin Torres", role: "Operaciones", email: "kevin@state360.pe" }
     ],
 
-    // Morosos
     delinquents: [
         { id: 1, tenant: "Carlos Morales", unit: "202-A", daysLate: 45, amountDue: 7500, phone: "987123456", lastPayment: "2023-09-05" },
         { id: 2, tenant: "Sofia Vargas", unit: "404-B", daysLate: 12, amountDue: 1800, phone: "991234567", lastPayment: "2023-10-20" },
         { id: 3, tenant: "Empresa Textil SAC", unit: "Local 03", daysLate: 8, amountDue: 3200, phone: "999888777", lastPayment: "2023-10-25" }
     ],
 
-    // Pagos recientes
     payments: [
         { id: 1, tenant: "Roberto Gomez", unit: "101-A", amount: 2500, date: "2023-11-05", method: "Transferencia", status: "Completado" },
         { id: 2, tenant: "Ana Lora", unit: "303-C", amount: 2100, date: "2023-11-01", method: "Yape", status: "Completado" },
@@ -67,7 +65,6 @@ const DATA = {
         { id: 5, tenant: "Sofia Vargas", unit: "404-B", amount: 1800, date: "2023-11-08", method: "Pendiente", status: "Pendiente" }
     ],
 
-    // Inspecciones
     inspections: [
         { id: 1, unit: "101-A", type: "Move-In", date: "2023-01-01", inspector: "Kevin Torres", tenant: "Roberto Gomez", status: "Completado", score: 95 },
         { id: 2, unit: "303-C", type: "Move-In", date: "2023-05-15", inspector: "Rosa Melendez", tenant: "Ana Lora", status: "Completado", score: 88 },
@@ -75,7 +72,6 @@ const DATA = {
         { id: 4, unit: "102-A", type: "Move-Out", date: "2023-10-28", inspector: "Kevin Torres", tenant: "N/A", status: "Pendiente", score: null }
     ],
 
-    // Settings/Configuración
     organization: {
         name: "Hommie Admin",
         ruc: "20123456789",
@@ -86,15 +82,16 @@ const DATA = {
         billingDay: 1
     },
 
-    // Datos específicos para KPIs
     kpiHistory: {
         occupancy: [88, 90, 91, 89, 93, 94],
         revenue: [120, 125, 130, 128, 138, 142],
         months: ['May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct'],
-        ticketTimes: [4.5, 3.8, 5.2, 4.1, 3.2], // Días
-        satisfaction: 8.4 // de 10
+        ticketTimes: [4.5, 3.8, 5.2, 4.1, 3.2],
+        satisfaction: 8.4
     }
 };
+
+// --- HELPERS ---
 
 const Icon = (name) => {
     const icons = {
@@ -115,6 +112,8 @@ const Badge = (text, type = 'gray') => {
     return `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${colors[type] || colors.gray}">${text}</span>`;
 };
 
+// --- ROUTER ---
+
 const Router = {
     init() { window.addEventListener('hashchange', () => this.handleRoute()); this.handleRoute(); },
     handleRoute() {
@@ -132,7 +131,7 @@ const Router = {
     navigate(path) { window.location.hash = path; }
 };
 
-// --- RENDERERS ---
+// --- PUBLIC PAGES ---
 
 function renderLanding() {
     document.getElementById('main-content').innerHTML = `
@@ -177,7 +176,7 @@ function renderLogin() {
 }
 
 function handleLogin() { DATA.isLoggedIn = true; Router.navigate('#/org-selector'); }
-function toggleRole() { DATA.userRole = DATA.userRole === "STAFF" ? "RESIDENTE" : "STAFF"; notify(`Rol: ${DATA.userRole}`); renderLogin(); }
+function toggleRole() { DATA.userRole = DATA.userRole === "STAFF" ? "RESIDENTE" : "STAFF"; notify('Rol: ' + DATA.userRole); renderLogin(); }
 
 function renderOrgSelector() {
     document.getElementById('main-content').innerHTML = `
@@ -197,6 +196,8 @@ function renderOrgSelector() {
 }
 
 function selectOrg(id) { DATA.currentOrg = DATA.orgs.find(o => o.id === id); Router.navigate('#/app/dashboard'); }
+
+// --- APP LAYOUT ---
 
 function renderAppLayout(subview) {
     const isResident = DATA.userRole === "RESIDENTE";
@@ -262,7 +263,7 @@ function navItem(label, key, icon, current) {
 }
 
 function renderSubViewContent(view) {
-    switch(view) {
+    switch (view) {
         case 'dashboard': return renderDashboard();
         case 'analytics': return renderKPIs();
         case 'leasing': return renderLeasing();
@@ -273,11 +274,42 @@ function renderSubViewContent(view) {
         case 'community': return renderCommunity();
         case 'inspections': return renderInspections();
         case 'settings': return renderSettings();
-        default: return `<h2 class="text-2xl font-bold">Módulo en construcción</h2>`;
+        default: return '<h2 class="text-2xl font-bold">Módulo en construcción</h2>';
     }
 }
 
-// --- DASHBOARD / KPI VIEWS ---
+// --- DASHBOARD ---
+
+function renderDashboard() {
+    return `
+        <div class="mb-10"><h1 class="text-3xl font-black text-slate-900">Resumen Operativo</h1></div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            ${kpiCard('Ocupación', '94.2%', 'blue', 'En meta')}
+            ${kpiCard('Morosidad', '3.1%', 'red', 'Crítico: 2')}
+            ${kpiCard('Recaudación', 'S/ 142.5k', 'green', '92% recaudado')}
+            ${kpiCard('Unidades', DATA.currentOrg.units, 'gray', 'Total org')}
+        </div>
+        <div class="bg-white rounded-3xl border p-8">
+            <h3 class="font-bold text-xl mb-6">Actividad Reciente</h3>
+            <div class="divide-y">
+                ${DATA.leads.slice(0, 3).map(l => `<div class="py-4 flex justify-between items-center"><div class="font-bold text-slate-800">${l.name} <span class="text-slate-400 font-medium text-xs ml-2">Interesado en ${l.unit}</span></div> ${Badge(l.stage, 'yellow')}</div>`).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function kpiCard(title, val, color, sub) {
+    const colors = { blue: 'text-blue-600 bg-blue-50', red: 'text-rose-600 bg-rose-50', green: 'text-emerald-600 bg-emerald-50', gray: 'text-slate-600 bg-slate-50' };
+    return `
+        <div class="bg-white p-8 rounded-3xl border shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">${title}</p>
+            <h2 class="text-3xl font-black text-slate-900 mb-2">${val}</h2>
+            <span class="text-xs font-bold ${colors[color]} px-2 py-1 rounded-lg">${sub}</span>
+        </div>
+    `;
+}
+
+// --- KPIs / ANALYTICS ---
 
 function renderKPIs() {
     return `
@@ -293,7 +325,6 @@ function renderKPIs() {
             </div>
         </div>
 
-        <!-- Gráfico de Ocupación Histórica -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             <div class="lg:col-span-2 bg-white p-8 rounded-3xl border shadow-sm">
                 <div class="flex justify-between items-center mb-10">
@@ -330,12 +361,12 @@ function renderKPIs() {
                 </div>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center text-sm font-bold"><span class="text-slate-500">Promotores</span> <span class="text-emerald-500">72%</span></div>
-                    <div class="w-full bg-slate-104 h-1.5 rounded-full"><div class="bg-emerald-500 h-full rounded-full" style="width: 72%"></div></div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full"><div class="bg-emerald-500 h-full rounded-full" style="width: 72%"></div></div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="bg-white p-8 rounded-3xl border shadow-sm">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Eficiencia de Mantenimiento</h4>
                 <div class="flex items-center justify-between mb-4">
@@ -344,8 +375,13 @@ function renderKPIs() {
                 </div>
                 <p class="text-xs text-emerald-500 font-bold mb-6">↓ 0.9 días menos que Set.</p>
                 <div class="space-y-3">
-                    <div class="flex justify-between text-[10px] font-black text-slate-400"><span>ALTA PRIORIDAD</span> <span>98% < 24H</span></div>
-                    <div class="w-full bg-slate-100 h-1 rounded-full"><div class="bg-blue-600 h-fMorosidad Crítica</h4>
+                    <div class="flex justify-between text-[10px] font-black text-slate-400"><span>ALTA PRIORIDAD</span> <span>98% &lt; 24H</span></div>
+                    <div class="w-full bg-slate-100 h-1 rounded-full"><div class="bg-blue-600 h-full rounded-full" style="width: 98%"></div></div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Morosidad Crítica</h4>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-bold text-slate-700">Total Adeudado</span>
                     <span class="text-xl font-black text-rose-600">S/ ${DATA.delinquents.reduce((sum, d) => sum + d.amountDue, 0).toLocaleString()}</span>
@@ -358,11 +394,6 @@ function renderKPIs() {
                             <span class="font-black ${d.daysLate > 30 ? 'text-rose-600' : 'text-amber-600'}">${d.daysLate}d - S/${d.amountDue}</span>
                         </div>
                     `).join('')}
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">ull rounded-full" style="width: 98%"></div></div>
                 </div>
             </div>
 
@@ -397,15 +428,9 @@ function renderKPIs() {
     `;
 }
 
-function renderDashboard() {
-    return `
-        <div class="mb-10"><h1 class="text-3xl font-black text-slate-900">Resumen Operativo</h1></div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            ${kpiCard('Ocupación', '94.2%', 'blue', 'En meta')}
-            ${kpiCard('Morosidad', '3.1%', 'red', 'Crítico: 2')}
-            ${kpiCard('Recaudación', 'S/ 142.5k', 'green', '92% recaudado')}
-            ${kpiCard('Unidades', DATA.currentOrg.units, 'gray', 'Total org')}
-        </div>
+// --- LEADS / CRM ---
+
+function renderLeasing() {
     const stages = ['Nuevo', 'Visita', 'Aplicación', 'Aprobado'];
     const leadsByStage = {
         'Nuevo': DATA.leads.filter(l => l.stage === 'Nuevo'),
@@ -413,383 +438,7 @@ function renderDashboard() {
         'Aplicación': DATA.leads.filter(l => l.stage === 'Aplicación'),
         'Aprobado': DATA.leads.filter(l => l.stage === 'Aprobado')
     };
-    return `
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-    const openTickets = DATA.tickets.filter(t => t.status === 'Abierto' || t.status === 'En Progreso');
-    const closedTickets = DATA.tickets.filter(t => t.status === 'Cerrado');
-    
-    return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
-            <p class="text-slate-500 font-medium">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tickets Abiertos</p>
-                <h2 class="text-4xl font-black text-amber-600 mb-2">${openTickets.length}</h2>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tiempo Promedio</p>
-                <h2 class="text-4xl font-black text-blue-600 mb-2">3.2<span class="text-lg">días</span></h2>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Satisfacción</p>
-                <h2 class="text-4xl font-black text-emerald-600 mb-2">4.8<span class="text-lg">/5</span></h2>
-            </div>
-        </div>
-        
-        <div class="space-y-4">
-            ${DATA.tickets.map(t => `
-                <div class="p-6 bg-white border-2 rounded-2xl hover:shadow-lg transition">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <h3 class="font-bold text-lg text-slate-900">${t.title}</h3>
-                                ${Badge(t.priority, t.priority === 'Alta' ? 'red' : t.priority === 'Media' ? 'yellow' : 'gray')}
-                            </div>
-                            <p class="text-sm text-slate-600">
-                                <span class="font-bold">${t.resident}</span> • Unidad ${t.unit} • ${t.category}
-                            </p>
-                        </div>
-                        <div class="text-right">
-                            ${Badge(t.status, t.status === 'Cerrado' ? 'green' : t.status === 'En Progreso' ? 'blue' : 'yellow')}
-                            <p class="text-xs text-slate-500 mt-2">${t.date}</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="notify('Ver detalle del ticket')" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Ver Detalle</button>
-                        ${t.status !== 'Cerrado' ? `<button onclick="notify('Asignar a proveedor')" class="px-4 py-2 bg-slate-50 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-100 transition">Asignar</button>` : ''}
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-function renderInspections() { 
-    return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Inspecciones</h1>
-            <p class="text-slate-500 font-medium">Check-in, check-out y inspecciones rutinarias</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Completadas</p>
-                <h2 class="text-4xl font-black text-emerald-600 mb-2">${DATA.inspections.filter(i => i.status === 'Completado').length}</h2>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendientes</p>
-                <h2 class="text-4xl font-black text-amber-600 mb-2">${DATA.inspections.filter(i => i.status === 'Pendiente').length}</h2>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Score Promedio</p>
-                <h2 class="text-4xl font-black text-blue-600 mb-2">${Math.round(DATA.inspections.filter(i => i.score).reduce((sum, i) => sum + i.score, 0) / DATA.inspections.filter(i => i.score).length)}</h2>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-3xl border overflow-hidden">
-            <div class="p-6 border-b bg-slate-50 flex justify-between items-center">
-                <h3 class="font-black text-lg">Historial de Inspecciones</h3>
-                <button onclick="notify('Nueva inspección')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition">
-                    + Nueva Inspección
-                </button>
-            </div>
-            <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 border-b">
-                    <tr>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Tipo</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inspector</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inquilino</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Score</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${DATA.inspections.map(i => `
-                        <tr class="border-b hover:bg-slate-50 transition">
-                            <td class="p-6 font-bold text-slate-900">${i.unit}</td>
-                            <td class="p-6">${Badge(i.type, i.type === 'Move-In' ? 'blue' : i.type === 'Move-Out' ? 'red' : 'gray')}</td>
-                            <td class="p-6 text-slate-600">${i.date}</td>
-                            <td class="p-6 text-slate-600">${i.inspector}</td>
-                            <td class="p-6 text-slate-600">${i.tenant}</td>
-                            <td class="p-6">
-                                ${i.score ? `<span class="font-black ${i.score >= 90 ? 'text-emerald-600' : i.score >= 75 ? 'text-blue-600' : 'text-amber-600'}">${i.score}/100</span>` : '<span class="text-slate-400">-</span>'}
-                            </td>
-                            <td class="p-6">${Badge(i.status, i.status === 'Completado' ? 'green' : 'yellow')}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-}
-
-function renderSettings() { 
-    return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Configuración</h1>
-            <p class="text-slate-500 font-medium">Gestión de organización y suscripción</p>
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div class="lg:col-span-2 bg-white rounded-3xl border p-8">
-                <h3 class="font-black text-lg mb-6">Información de la Organización</h3>
-                <div class="space-y-6">
-                    <div>
-                        <label class="text-xs font-black text-slate-400 uppercase">Nombre</label>
-                        <input type="text" value="${DATA.organization.name}" class="w-full mt-2 px-4 py-3 border rounded-xl font-bold" readonly>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-xs font-black text-slate-400 uppercase">RUC</label>
-                            <input type="text" value="${DATA.organization.ruc}" class="w-full mt-2 px-4 py-3 border rounded-xl font-bold" readonly>
-                        </div>
-                        <div>
-                            <label class="text-xs font-black text-slate-400 uppercase">Teléfono</label>
-                            <input type="text" value="${DATA.organization.phone}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs font-black text-slate-400 uppercase">Dirección</label>
-                        <input type="text" value="${DATA.organization.address}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
-                    </div>
-                    <div>
-                        <label class="text-xs font-black text-slate-400 uppercase">Email</label>
-                        <input type="email" value="${DATA.organization.email}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl border-2 border-blue-200 p-8">
-                <div class="text-center mb-6">
-                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full text-xs font-black mb-4">PLAN ${DATA.organization.plan.toUpperCase()}</div>
-                    <h3 class="text-4xl font-black text-slate-900 mb-2">$299<span class="text-lg text-slate-500">/mes</span></h3>
-                    <p class="text-sm text-slate-600 font-medium">Facturado mensualmente</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center text-sm">
-                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span class="font-medium">Hasta 100 unidades</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span class="font-medium">5 usuarios</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span class="font-medium">Analytics avanzado</span>
-                    </div>
-                    <div class="flex items-center text-sm">
-                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span class="font-medium">Soporte prioritario</span>
-                    </div>
-                </div>
-                
-                <button onclick="notify('Gestión de suscripción próximamente')" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">
-                    Actualizar Plan
-                </button>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-3xl border p-8">
-            <h3 class="font-black text-lg mb-6">Equipo</h3>
-            <div class="space-y-4">
-                ${DATA.staff.map(s => `
-                    <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold mr-4">
-                                ${s.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div>
-                                <p class="font-bold text-slate-900">${s.name}</p>
-                                <p class="text-sm text-slate-500">${s.email}</p>
-                            </div>
-                        </div>
-                        ${Badge(s.role, 'blue')}
-                    </div>
-                `).join('')}
-            </div>
-            <button onclick="notify('Invitar miembro próximamente')" class="mt-6 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">
-                + Invitar Miembro
-            </button>
-        </div>
-    `;
-
-            </div>
-            <div class="flex gap-3">
-                ${Badge(`${DATA.units.filter(u => u.status === 'Ocupada').length} Ocupadas`, 'green')}
-                ${Badge(`${DATA.units.filter(u => u.status === 'Disponible').length} Disponibles`, 'blue')}
-                ${Badge(`${DATA.units.filter(u => u.status === 'Mantenimiento').length} Mantenimiento`, 'yellow')}
-            </div>
-        </div>
-        <div class="bg-white rounded-3xl border overflow-hidden">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 border-b">
-                    <tr>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Código</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Tipo</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Propiedad</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Renta</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${DATA.units.map(u => `
-                        <tr class="border-b hover:bg-slate-50 transition">
-                            <td class="p-6 font-bold text-slate-900">${u.code}</td>
-                            <td class="p-6 text-slate-600">${u.type}</td>
-                            <td class="p-6 text-slate-600">${u.property}</td>
-                            <td class="p-6 font-bold text-slate-900">S/ ${u.rent.toLocaleString()}</td>
-                            <td class="p-6">${Badge(u.status, u.status === 'Ocupada' ? 'green' : u.status === 'Disponible' ? 'blue' : 'yellow')}</td>
-                            <td class="p-6">
-                                <button onclick="notify('Ver detalle de ${u.code}')" class="text-blue-600 font-bold text-xs hover:text-blue-700">Ver Detalle →</button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-}
-
-function renderLeases() { 
-    return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
-            <p class="text-slate-500 font-medium">${DATA.leases.length} contratos activos</p>
-        </div>
-        
-        <div class="grid grid-cols-1 gap-6">
-            ${DATA.leases.map(lease => `
-                <div class="bg-white rounded-3xl border p-8 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-xl font-black text-slate-900 mb-2">${lease.tenant}</h3>
-                            <p class="text-slate-500 font-medium">Unidad: <span class="font-bold text-slate-700">${lease.unit}</span></p>
-                        </div>
-                        ${Badge(lease.status, lease.status === 'Activo' ? 'green' : 'yellow')}
-                    </div>
-                    
-                    <div class="grid grid-cols-4 gap-6 mb-6">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Fecha Inicio</p>
-                            <p class="font-bold text-slate-900">${lease.start}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Fecha Fin</p>
-                            <p class="font-bold text-slate-900">${lease.end}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Renta Mensual</p>
-                            <p class="font-bold text-emerald-600">S/ ${lease.rent.toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Día de Pago</p>
-                            <p class="font-bold text-slate-900">Día ${lease.day}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="notify('Ver contrato PDF')" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Ver Contrato</button>
-                        <button onclick="notify('Renovar contrato')" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-bold text-sm hover:bg-emerald-100 transition">Renovar</button>
-                        <button onclick="notify('Terminar contrato')" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg font-bold text-sm hover:bg-rose-100 transition">Terminar</button>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-function renderBilling() { 
-    const totalCollected = DATA.payments.filter(p => p.status === 'Completado').reduce((sum, p) => sum + p.amount, 0);
-    const totalPending = DATA.payments.filter(p => p.status === 'Pendiente').reduce((sum, p) => sum + p.amount, 0);
-    const totalDelinquent = DATA.delinquents.reduce((sum, d) => sum + d.amountDue, 0);
-    
-    return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Cobranza y Facturación</h1>
-            <p class="text-slate-500 font-medium">Gestión de pagos y estado de cuentas</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recaudado este mes</p>
-                <h2 class="text-3xl font-black text-emerald-600 mb-2">S/ ${totalCollected.toLocaleString()}</h2>
-                <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Completado').length} pagos completados</p>
-            </div>
-            
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendiente</p>
-                <h2 class="text-3xl font-black text-amber-600 mb-2">S/ ${totalPending.toLocaleString()}</h2>
-                <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Pendiente').length} pagos pendientes</p>
-            </div>
-            
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Morosidad</p>
-                <h2 class="text-3xl font-black text-rose-600 mb-2">S/ ${totalDelinquent.toLocaleString()}</h2>
-                <p class="text-xs font-bold text-slate-500">${DATA.delinquents.length} inquilinos morosos</p>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-3xl border overflow-hidden mb-8">
-            <div class="p-6 border-b bg-slate-50">
-                <h3 class="font-black text-lg">Pagos Recientes</h3>
-            </div>
-            <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 border-b">
-                    <tr>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inquilino</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Monto</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Método</th>
-                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${DATA.payments.map(p => `
-                        <tr class="border-b hover:bg-slate-50 transition">
-                            <td class="p-6 text-slate-600">${p.date}</td>
-                            <td class="p-6 font-bold text-slate-900">${p.tenant}</td>
-                            <td class="p-6 text-slate-600">${p.unit}</td>
-                            <td class="p-6 font-bold text-slate-900">S/ ${p.amount.toLocaleString()}</td>
-                            <td class="p-6 text-slate-600">${p.method}</td>
-                            <td class="p-6">${Badge(p.status, p.status === 'Completado' ? 'green' : 'yellow')}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="bg-rose-50 border-2 border-rose-200 rounded-3xl p-8">
-            <h3 class="font-black text-lg text-rose-900 mb-4">⚠️ Inquilinos Morosos</h3>
-            <div class="space-y-4">
-                ${DATA.delinquents.map(d => `
-                    <div class="bg-white rounded-xl p-6 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-900">${d.tenant}</h4>
-                            <p class="text-sm text-slate-600">Unidad ${d.unit} • ${d.daysLate} días de retraso</p>
-                            <p class="text-xs text-slate-500 mt-1">Último pago: ${d.lastPayment}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-2xl font-black text-rose-600">S/ ${d.amountDue.toLocaleString()}</p>
-                            <button onclick="notify('Enviar recordatorio a ${d.tenant}')" class="mt-2 px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">
-                                Enviar Recordatorio
-                            </button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-
+    const stageColors = {
         'Nuevo': 'border-blue-200 bg-blue-50',
         'Visita': 'border-amber-200 bg-amber-50',
         'Aplicación': 'border-purple-200 bg-purple-50',
@@ -802,9 +451,7 @@ function renderBilling() {
                 <h1 class="text-3xl font-black text-slate-900">Pipeline de Leasing</h1>
                 <p class="text-slate-500 font-medium">${DATA.leads.length} leads activos en proceso</p>
             </div>
-            <button onclick="notify('Función de agregar lead próximamente')" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">
-                + Nuevo Lead
-            </button>
+            <button onclick="notify('Función de agregar lead próximamente')" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">+ Nuevo Lead</button>
         </div>
 
         <div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
@@ -817,9 +464,7 @@ function renderBilling() {
                         </div>
                         <div class="p-3 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
                             ${leadsByStage[stage].length === 0 ? `
-                                <div class="text-center py-8 text-slate-300 text-sm font-medium">
-                                    Sin leads
-                                </div>
+                                <div class="text-center py-8 text-slate-300 text-sm font-medium">Sin leads</div>
                             ` : leadsByStage[stage].map(lead => `
                                 <div class="bg-white p-4 rounded-xl border border-slate-200 hover:shadow-lg transition cursor-pointer" onclick="notify('Ver detalle de ${lead.name}')">
                                     <div class="flex items-start justify-between mb-3">
@@ -874,38 +519,399 @@ function renderBilling() {
             </div>
         </div>
     `;
+}
 
-        <div class="bg-white rounded-3xl border p-8">
-            <h3 class="font-bold text-xl mb-6">Actividad Reciente</h3>
-            <div class="divide-y">
-                ${DATA.leads.slice(0, 3).map(l => `<div class="py-4 flex justify-between items-center"><div class="font-bold text-slate-800">${l.name} <span class="text-slate-400 font-medium text-xs ml-2">Interesado en ${l.unit}</span></div> ${Badge(l.stage, 'yellow')}</div>`).join('')}
+// --- PROPERTIES ---
+
+function renderProperties() {
+    return `
+        <h2 class="text-2xl font-bold mb-4">Propiedades</h2>
+        <div class="grid grid-cols-2 gap-8">
+            ${DATA.properties.map(p => `
+                <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                    <img src="${p.img}" class="h-32 w-full object-cover rounded-2xl mb-4">
+                    <h3 class="font-bold text-xl">${p.name}</h3>
+                    <p class="text-slate-500 font-medium">${p.address}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// --- UNITS ---
+
+function renderUnits() {
+    return `
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900">Unidades</h1>
+                <p class="text-slate-500 font-medium">${DATA.units.length} unidades en total</p>
+            </div>
+            <div class="flex gap-3">
+                ${Badge(DATA.units.filter(u => u.status === 'Ocupada').length + ' Ocupadas', 'green')}
+                ${Badge(DATA.units.filter(u => u.status === 'Disponible').length + ' Disponibles', 'blue')}
+                ${Badge(DATA.units.filter(u => u.status === 'Mantenimiento').length + ' Mantenimiento', 'yellow')}
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl border overflow-hidden">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Código</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Tipo</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Propiedad</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Renta</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${DATA.units.map(u => `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-6 font-bold text-slate-900">${u.code}</td>
+                            <td class="p-6 text-slate-600">${u.type}</td>
+                            <td class="p-6 text-slate-600">${u.property}</td>
+                            <td class="p-6 font-bold text-slate-900">S/ ${u.rent.toLocaleString()}</td>
+                            <td class="p-6">${Badge(u.status, u.status === 'Ocupada' ? 'green' : u.status === 'Disponible' ? 'blue' : 'yellow')}</td>
+                            <td class="p-6">
+                                <button onclick="notify('Ver detalle de ${u.code}')" class="text-blue-600 font-bold text-xs hover:text-blue-700">Ver Detalle →</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// --- LEASES ---
+
+function renderLeases() {
+    return `
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
+            <p class="text-slate-500 font-medium">${DATA.leases.length} contratos activos</p>
+        </div>
+        <div class="grid grid-cols-1 gap-6">
+            ${DATA.leases.map(lease => `
+                <div class="bg-white rounded-3xl border p-8 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-black text-slate-900 mb-2">${lease.tenant}</h3>
+                            <p class="text-slate-500 font-medium">Unidad: <span class="font-bold text-slate-700">${lease.unit}</span></p>
+                        </div>
+                        ${Badge(lease.status, lease.status === 'Activo' ? 'green' : 'yellow')}
+                    </div>
+                    <div class="grid grid-cols-4 gap-6 mb-6">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Fecha Inicio</p>
+                            <p class="font-bold text-slate-900">${lease.start}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Fecha Fin</p>
+                            <p class="font-bold text-slate-900">${lease.end}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Renta Mensual</p>
+                            <p class="font-bold text-emerald-600">S/ ${lease.rent.toLocaleString()}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Día de Pago</p>
+                            <p class="font-bold text-slate-900">Día ${lease.day}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="notify('Ver contrato PDF')" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Ver Contrato</button>
+                        <button onclick="notify('Renovar contrato')" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-bold text-sm hover:bg-emerald-100 transition">Renovar</button>
+                        <button onclick="notify('Terminar contrato')" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg font-bold text-sm hover:bg-rose-100 transition">Terminar</button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// --- BILLING ---
+
+function renderBilling() {
+    const totalCollected = DATA.payments.filter(p => p.status === 'Completado').reduce((sum, p) => sum + p.amount, 0);
+    const totalPending = DATA.payments.filter(p => p.status === 'Pendiente').reduce((sum, p) => sum + p.amount, 0);
+    const totalDelinquent = DATA.delinquents.reduce((sum, d) => sum + d.amountDue, 0);
+
+    return `
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Cobranza y Facturación</h1>
+            <p class="text-slate-500 font-medium">Gestión de pagos y estado de cuentas</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recaudado este mes</p>
+                <h2 class="text-3xl font-black text-emerald-600 mb-2">S/ ${totalCollected.toLocaleString()}</h2>
+                <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Completado').length} pagos completados</p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendiente</p>
+                <h2 class="text-3xl font-black text-amber-600 mb-2">S/ ${totalPending.toLocaleString()}</h2>
+                <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Pendiente').length} pagos pendientes</p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Morosidad</p>
+                <h2 class="text-3xl font-black text-rose-600 mb-2">S/ ${totalDelinquent.toLocaleString()}</h2>
+                <p class="text-xs font-bold text-slate-500">${DATA.delinquents.length} inquilinos morosos</p>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl border overflow-hidden mb-8">
+            <div class="p-6 border-b bg-slate-50">
+                <h3 class="font-black text-lg">Pagos Recientes</h3>
+            </div>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inquilino</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Monto</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Método</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${DATA.payments.map(p => `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-6 text-slate-600">${p.date}</td>
+                            <td class="p-6 font-bold text-slate-900">${p.tenant}</td>
+                            <td class="p-6 text-slate-600">${p.unit}</td>
+                            <td class="p-6 font-bold text-slate-900">S/ ${p.amount.toLocaleString()}</td>
+                            <td class="p-6 text-slate-600">${p.method}</td>
+                            <td class="p-6">${Badge(p.status, p.status === 'Completado' ? 'green' : 'yellow')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div class="bg-rose-50 border-2 border-rose-200 rounded-3xl p-8">
+            <h3 class="font-black text-lg text-rose-900 mb-4">⚠️ Inquilinos Morosos</h3>
+            <div class="space-y-4">
+                ${DATA.delinquents.map(d => `
+                    <div class="bg-white rounded-xl p-6 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-900">${d.tenant}</h4>
+                            <p class="text-sm text-slate-600">Unidad ${d.unit} • ${d.daysLate} días de retraso</p>
+                            <p class="text-xs text-slate-500 mt-1">Último pago: ${d.lastPayment}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-black text-rose-600">S/ ${d.amountDue.toLocaleString()}</p>
+                            <button onclick="notify('Enviar recordatorio a ${d.tenant}')" class="mt-2 px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-xs hover:bg-rose-700 transition">Enviar Recordatorio</button>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
 }
 
-function kpiCard(title, val, color, sub) {
-    const colors = { blue: 'text-blue-600 bg-blue-50', red: 'text-rose-600 bg-rose-50', green: 'text-emerald-600 bg-emerald-50', gray: 'text-slate-600 bg-slate-50' };
+// --- COMMUNITY ---
+
+function renderCommunity() {
+    const openTickets = DATA.tickets.filter(t => t.status === 'Abierto' || t.status === 'En Progreso');
+
     return `
-        <div class="bg-white p-8 rounded-3xl border shadow-sm">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">${title}</p>
-            <h2 class="text-3xl font-black text-slate-900 mb-2">${val}</h2>
-            <span class="text-xs font-bold ${colors[color]} px-2 py-1 rounded-lg">${sub}</span>
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
+            <p class="text-slate-500 font-medium">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tickets Abiertos</p>
+                <h2 class="text-4xl font-black text-amber-600 mb-2">${openTickets.length}</h2>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tiempo Promedio</p>
+                <h2 class="text-4xl font-black text-blue-600 mb-2">3.2<span class="text-lg">días</span></h2>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Satisfacción</p>
+                <h2 class="text-4xl font-black text-emerald-600 mb-2">4.8<span class="text-lg">/5</span></h2>
+            </div>
+        </div>
+        <div class="space-y-4">
+            ${DATA.tickets.map(t => `
+                <div class="p-6 bg-white border-2 rounded-2xl hover:shadow-lg transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="font-bold text-lg text-slate-900">${t.title}</h3>
+                                ${Badge(t.priority, t.priority === 'Alta' ? 'red' : t.priority === 'Media' ? 'yellow' : 'gray')}
+                            </div>
+                            <p class="text-sm text-slate-600">
+                                <span class="font-bold">${t.resident}</span> • Unidad ${t.unit} • ${t.category}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            ${Badge(t.status, t.status === 'Cerrado' ? 'green' : t.status === 'En Progreso' ? 'blue' : 'yellow')}
+                            <p class="text-xs text-slate-500 mt-2">${t.date}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="notify('Ver detalle del ticket')" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Ver Detalle</button>
+                        ${t.status !== 'Cerrado' ? '<button onclick="notify(\'Asignar a proveedor\')" class="px-4 py-2 bg-slate-50 text-slate-600 rounded-lg font-bold text-sm hover:bg-slate-100 transition">Asignar</button>' : ''}
+                    </div>
+                </div>
+            `).join('')}
         </div>
     `;
 }
 
-// --- STUB MODULES ---
-function renderLeasing() { return `<h2 class="text-2xl font-bold mb-4">Leads / CRM</h2><div class="p-20 text-center border-2 border-dashed rounded-3xl text-slate-300 font-bold uppercase tracking-widest">Tablero Kanban de Ventas</div>`; }
-function renderProperties() { return `<h2 class="text-2xl font-bold mb-4">Propiedades</h2><div class="grid grid-cols-2 gap-8">${DATA.properties.map(p => `<div class="bg-white p-8 rounded-3xl border shadow-sm"><img src="${p.img}" class="h-32 w-full object-cover rounded-2xl mb-4"><h3 class="font-bold text-xl">${p.name}</h3><p class="text-slate-500 font-medium">${p.address}</p></div>`).join('')}</div>`; }
-function renderUnits() { return `<h2 class="text-2xl font-bold mb-4">Unidades</h2><div class="bg-white rounded-3xl border overflow-hidden"><table class="w-full text-left text-sm">${DATA.units.map(u => `<tr class="border-b"><td class="p-6 font-bold">${u.code}</td><td class="p-6">${u.property}</td><td class="p-6">${Badge(u.status, 'blue')}</td></tr>`).join('')}</table></div>`; }
-function renderLeases() { return `<h2 class="text-2xl font-bold mb-4">Contratos</h2><p class="text-slate-500">Gestión de firmas digitales y arriendos.</p>`; }
-function renderBilling() { return `<h2 class="text-2xl font-bold mb-4">Cobranza</h2><div class="bg-white p-10 rounded-3xl border text-center font-black text-slate-300">MODULO DE FACTURACIÓN ELECTRÓNICA PERÚ</div>`; }
-function renderCommunity() { return `<h2 class="text-2xl font-bold mb-4">Comunidad</h2><div class="space-y-4">${DATA.tickets.map(t => `<div class="p-4 bg-white border rounded-2xl flex justify-between"><div><p class="font-bold">${t.title}</p><p class="text-xs text-slate-400">${t.resident}</p></div>${Badge(t.status, 'yellow')}</div>`).join('')}</div>`; }
-function renderInspections() { return `<h2 class="text-2xl font-bold mb-4">Inspecciones</h2><p class="text-slate-500">Check-in y Check-out digital.</p>`; }
-function renderSettings() { return `<h2 class="text-2xl font-bold mb-4">Configuración</h2><p class="text-slate-500">Gestión de seats y suscripción.</p>`; }
+// --- INSPECTIONS ---
+
+function renderInspections() {
+    const completedInspections = DATA.inspections.filter(i => i.score);
+    const avgScore = completedInspections.length > 0 ? Math.round(completedInspections.reduce((sum, i) => sum + i.score, 0) / completedInspections.length) : 0;
+
+    return `
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Inspecciones</h1>
+            <p class="text-slate-500 font-medium">Check-in, check-out y inspecciones rutinarias</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Completadas</p>
+                <h2 class="text-4xl font-black text-emerald-600 mb-2">${DATA.inspections.filter(i => i.status === 'Completado').length}</h2>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendientes</p>
+                <h2 class="text-4xl font-black text-amber-600 mb-2">${DATA.inspections.filter(i => i.status === 'Pendiente').length}</h2>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Score Promedio</p>
+                <h2 class="text-4xl font-black text-blue-600 mb-2">${avgScore}</h2>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl border overflow-hidden">
+            <div class="p-6 border-b bg-slate-50 flex justify-between items-center">
+                <h3 class="font-black text-lg">Historial de Inspecciones</h3>
+                <button onclick="notify('Nueva inspección')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition">+ Nueva Inspección</button>
+            </div>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Tipo</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inspector</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Inquilino</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Score</th>
+                        <th class="p-6 font-black text-xs uppercase text-slate-600">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${DATA.inspections.map(i => `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-6 font-bold text-slate-900">${i.unit}</td>
+                            <td class="p-6">${Badge(i.type, i.type === 'Move-In' ? 'blue' : i.type === 'Move-Out' ? 'red' : 'gray')}</td>
+                            <td class="p-6 text-slate-600">${i.date}</td>
+                            <td class="p-6 text-slate-600">${i.inspector}</td>
+                            <td class="p-6 text-slate-600">${i.tenant}</td>
+                            <td class="p-6">
+                                ${i.score ? '<span class="font-black ' + (i.score >= 90 ? 'text-emerald-600' : i.score >= 75 ? 'text-blue-600' : 'text-amber-600') + '">' + i.score + '/100</span>' : '<span class="text-slate-400">-</span>'}
+                            </td>
+                            <td class="p-6">${Badge(i.status, i.status === 'Completado' ? 'green' : 'yellow')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// --- SETTINGS ---
+
+function renderSettings() {
+    return `
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Configuración</h1>
+            <p class="text-slate-500 font-medium">Gestión de organización y suscripción</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="lg:col-span-2 bg-white rounded-3xl border p-8">
+                <h3 class="font-black text-lg mb-6">Información de la Organización</h3>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-xs font-black text-slate-400 uppercase">Nombre</label>
+                        <input type="text" value="${DATA.organization.name}" class="w-full mt-2 px-4 py-3 border rounded-xl font-bold" readonly>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-black text-slate-400 uppercase">RUC</label>
+                            <input type="text" value="${DATA.organization.ruc}" class="w-full mt-2 px-4 py-3 border rounded-xl font-bold" readonly>
+                        </div>
+                        <div>
+                            <label class="text-xs font-black text-slate-400 uppercase">Teléfono</label>
+                            <input type="text" value="${DATA.organization.phone}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black text-slate-400 uppercase">Dirección</label>
+                        <input type="text" value="${DATA.organization.address}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
+                    </div>
+                    <div>
+                        <label class="text-xs font-black text-slate-400 uppercase">Email</label>
+                        <input type="email" value="${DATA.organization.email}" class="w-full mt-2 px-4 py-3 border rounded-xl" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl border-2 border-blue-200 p-8">
+                <div class="text-center mb-6">
+                    <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full text-xs font-black mb-4">PLAN ${DATA.organization.plan.toUpperCase()}</div>
+                    <h3 class="text-4xl font-black text-slate-900 mb-2">$299<span class="text-lg text-slate-500">/mes</span></h3>
+                    <p class="text-sm text-slate-600 font-medium">Facturado mensualmente</p>
+                </div>
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center text-sm">
+                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="font-medium">Hasta 100 unidades</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="font-medium">5 usuarios</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="font-medium">Analytics avanzado</span>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="font-medium">Soporte prioritario</span>
+                    </div>
+                </div>
+                <button onclick="notify('Gestión de suscripción próximamente')" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">Actualizar Plan</button>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl border p-8">
+            <h3 class="font-black text-lg mb-6">Equipo</h3>
+            <div class="space-y-4">
+                ${DATA.staff.map(s => `
+                    <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold mr-4">
+                                ${s.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900">${s.name}</p>
+                                <p class="text-sm text-slate-500">${s.email}</p>
+                            </div>
+                        </div>
+                        ${Badge(s.role, 'blue')}
+                    </div>
+                `).join('')}
+            </div>
+            <button onclick="notify('Invitar miembro próximamente')" class="mt-6 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">+ Invitar Miembro</button>
+        </div>
+    `;
+}
 
 // --- GLOBAL UTILS ---
+
 function notify(msg) {
     const toast = document.getElementById('notification-toast');
     document.getElementById('notification-msg').innerText = msg;
