@@ -88,6 +88,52 @@ const DATA = {
         months: ['May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct'],
         ticketTimes: [4.5, 3.8, 5.2, 4.1, 3.2],
         satisfaction: 8.4
+    },
+
+    amenities: [
+        { id: 1, name: "Piscina", icon: "🏊", capacity: 20, hours: "6:00 AM - 10:00 PM", rules: "Obligatorio gorro y ducha previa", status: "Disponible" },
+        { id: 2, name: "Gimnasio", icon: "🏋️", capacity: 15, hours: "5:00 AM - 11:00 PM", rules: "Uso de toalla obligatorio", status: "Disponible" },
+        { id: 3, name: "Sala de Fiestas", icon: "🎉", capacity: 50, hours: "10:00 AM - 12:00 AM", rules: "Reservar con 48h de anticipación. Depósito S/ 200", status: "Disponible" },
+        { id: 4, name: "Parrilla / BBQ", icon: "🔥", capacity: 12, hours: "11:00 AM - 10:00 PM", rules: "Limpiar el área después de usar", status: "Disponible" },
+        { id: 5, name: "Coworking", icon: "💻", capacity: 10, hours: "7:00 AM - 10:00 PM", rules: "Silencio obligatorio", status: "Mantenimiento" },
+        { id: 6, name: "Zona de Niños", icon: "🧒", capacity: 8, hours: "8:00 AM - 8:00 PM", rules: "Menores acompañados por un adulto", status: "Disponible" }
+    ],
+
+    reservations: [
+        { id: 1, amenity: "Piscina", resident: "Roberto Gomez", unit: "101-A", date: "2026-02-10", timeSlot: "10:00 - 12:00", status: "Confirmada", guests: 3 },
+        { id: 2, amenity: "Sala de Fiestas", resident: "Ana Lora", unit: "303-C", date: "2026-02-14", timeSlot: "18:00 - 23:00", status: "Confirmada", guests: 30 },
+        { id: 3, amenity: "Gimnasio", resident: "Roberto Gomez", unit: "101-A", date: "2026-02-08", timeSlot: "06:00 - 07:00", status: "Confirmada", guests: 0 },
+        { id: 4, amenity: "Parrilla / BBQ", resident: "Pedro Castillo", unit: "505-A", date: "2026-02-15", timeSlot: "13:00 - 17:00", status: "Pendiente", guests: 8 },
+        { id: 5, amenity: "Piscina", resident: "Maria Torres", unit: "102-B", date: "2026-02-09", timeSlot: "14:00 - 16:00", status: "Confirmada", guests: 2 },
+        { id: 6, amenity: "Coworking", resident: "Ana Lora", unit: "303-C", date: "2026-02-11", timeSlot: "09:00 - 13:00", status: "Cancelada", guests: 0 },
+        { id: 7, amenity: "Sala de Fiestas", resident: "Carlos Morales", unit: "202-A", date: "2026-02-22", timeSlot: "15:00 - 21:00", status: "Confirmada", guests: 25 },
+        { id: 8, amenity: "Gimnasio", resident: "Sofia Vargas", unit: "404-B", date: "2026-02-08", timeSlot: "17:00 - 18:00", status: "Confirmada", guests: 0 },
+        { id: 9, amenity: "Zona de Niños", resident: "Maria Torres", unit: "102-B", date: "2026-02-12", timeSlot: "10:00 - 12:00", status: "Confirmada", guests: 3 },
+        { id: 10, amenity: "Piscina", resident: "Roberto Gomez", unit: "101-A", date: "2026-02-16", timeSlot: "08:00 - 10:00", status: "Pendiente", guests: 1 }
+    ],
+
+    comunicados: [
+        { id: 1, title: "Mantenimiento del ascensor", body: "El ascensor B estará en mantenimiento el 12 de febrero de 8AM a 2PM.", date: "2026-02-06", type: "Mantenimiento", priority: "Alta" },
+        { id: 2, title: "Fumigación programada", body: "Se realizará fumigación general el 15 de febrero. Favor cerrar ventanas.", date: "2026-02-05", type: "Aviso", priority: "Media" },
+        { id: 3, title: "Nueva tarifa de estacionamiento", body: "A partir de marzo 2026, la tarifa de estacionamiento visitantes será S/ 5/hora.", date: "2026-02-03", type: "Informativo", priority: "Baja" },
+        { id: 4, title: "Corte de agua programado", body: "SEDAPAL informa corte de agua el 20 de febrero de 9AM a 5PM.", date: "2026-02-07", type: "Urgente", priority: "Alta" },
+        { id: 5, title: "Junta de propietarios", body: "Se convoca a junta ordinaria el 25 de febrero a las 7PM en la Sala de Fiestas.", date: "2026-02-04", type: "Informativo", priority: "Media" }
+    ],
+
+    resident: {
+        name: "Roberto Gomez",
+        unit: "101-A",
+        property: "Torre Miraflores",
+        floor: "Piso 1",
+        contract: { start: "2023-01-01", end: "2024-01-01", rent: 2500, day: 5 },
+        payments: [
+            { id: 1, month: "Febrero 2026", amount: 2500, date: "2026-02-05", method: "Transferencia", status: "Completado" },
+            { id: 2, month: "Enero 2026", amount: 2500, date: "2026-01-05", method: "Yape", status: "Completado" },
+            { id: 3, month: "Diciembre 2025", amount: 2500, date: "2025-12-06", method: "Transferencia", status: "Completado" },
+            { id: 4, month: "Noviembre 2025", amount: 2500, date: "2025-11-05", method: "Transferencia", status: "Completado" },
+            { id: 5, month: "Octubre 2025", amount: 2500, date: "2025-10-05", method: "Yape", status: "Completado" },
+            { id: 6, month: "Marzo 2026", amount: 2500, date: null, method: "-", status: "Pendiente" }
+        ]
     }
 };
 
@@ -102,7 +148,9 @@ const Icon = (name) => {
         settings: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`,
         community: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`,
         chart: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>`,
-        inspection: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+        inspection: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+        calendar: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>`,
+        megaphone: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>`
     };
     return icons[name] || '';
 };
@@ -202,9 +250,12 @@ function selectOrg(id) { DATA.currentOrg = DATA.orgs.find(o => o.id === id); Rou
 function renderAppLayout(subview) {
     const isResident = DATA.userRole === "RESIDENTE";
     const sidebarNav = isResident ? `
-        <div class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2 px-4 tracking-widest">Inquilino</div>
-        ${navItem('Dashboard', 'dashboard', 'home', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2 px-4 tracking-widest">Mi Departamento</div>
+        ${navItem('Inicio', 'dashboard', 'home', subview)}
         ${navItem('Mis Pagos', 'billing', 'billing', subview)}
+        ${navItem('Comunicados', 'comunicados', 'megaphone', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Servicios</div>
+        ${navItem('Reservas', 'reservations', 'calendar', subview)}
         ${navItem('Soporte', 'community', 'community', subview)}
     ` : `
         ${navItem('Resumen', 'dashboard', 'home', subview)}
@@ -217,6 +268,7 @@ function renderAppLayout(subview) {
         ${navItem('Cobranza', 'billing', 'billing', subview)}
         <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Operación</div>
         ${navItem('Comunidad', 'community', 'community', subview)}
+        ${navItem('Reservaciones', 'reservations', 'calendar', subview)}
         ${navItem('Inspecciones', 'inspections', 'inspection', subview)}
         <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Sistema</div>
         ${navItem('Configuración', 'settings', 'settings', subview)}
@@ -289,15 +341,18 @@ function navItem(label, key, icon, current) {
 }
 
 function renderSubViewContent(view) {
+    const isResident = DATA.userRole === "RESIDENTE";
     switch (view) {
-        case 'dashboard': return renderDashboard();
+        case 'dashboard': return isResident ? renderResidentDashboard() : renderDashboard();
         case 'analytics': return renderKPIs();
         case 'leasing': return renderLeasing();
         case 'properties': return renderProperties();
         case 'units': return renderUnits();
         case 'leases': return renderLeases();
-        case 'billing': return renderBilling();
-        case 'community': return renderCommunity();
+        case 'billing': return isResident ? renderResidentBilling() : renderBilling();
+        case 'community': return isResident ? renderResidentCommunity() : renderCommunity();
+        case 'comunicados': return renderResidentComunicados();
+        case 'reservations': return isResident ? renderResidentReservations() : renderAdminReservations();
         case 'inspections': return renderInspections();
         case 'settings': return renderSettings();
         default: return '<h2 class="text-2xl font-bold">Módulo en construcción</h2>';
@@ -936,6 +991,483 @@ function renderSettings() {
                 `).join('')}
             </div>
             <button onclick="notify('Invitar miembro próximamente')" class="mt-6 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">+ Invitar Miembro</button>
+        </div>
+    `;
+}
+
+// --- RESIDENT VIEWS ---
+
+function renderResidentDashboard() {
+    const r = DATA.resident;
+    const nextPayment = r.payments.find(p => p.status === 'Pendiente');
+    const myTickets = DATA.tickets.filter(t => t.resident === r.name);
+    const openTickets = myTickets.filter(t => t.status !== 'Cerrado');
+    const myReservations = DATA.reservations.filter(res => res.resident === r.name && res.status !== 'Cancelada');
+    const upcomingRes = myReservations.filter(res => res.date >= '2026-02-08').sort((a, b) => a.date.localeCompare(b.date));
+    const recentComunicados = DATA.comunicados.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+
+    return `
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900">Hola, ${r.name.split(' ')[0]} 👋</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Unidad ${r.unit} • ${r.property} • ${r.floor}</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+            ${kpiCard('Próximo Pago', nextPayment ? 'S/ ' + nextPayment.amount.toLocaleString() : 'Al día', 'blue', nextPayment ? nextPayment.month : '✅ Todo pagado')}
+            ${kpiCard('Día de Pago', 'Día ' + r.contract.day, 'gray', 'Cada mes')}
+            ${kpiCard('Tickets', openTickets.length, openTickets.length > 0 ? 'red' : 'green', openTickets.length > 0 ? openTickets.length + ' abiertos' : 'Sin pendientes')}
+            ${kpiCard('Reservas', upcomingRes.length, 'blue', upcomingRes.length > 0 ? 'Próximas' : 'Sin reservas')}
+        </div>
+
+        <!-- Próximas reservas -->
+        ${upcomingRes.length > 0 ? `
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8 mb-6 md:mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-base md:text-lg">🗓 Mis Próximas Reservas</h3>
+                <a href="#/app/reservations" class="text-blue-600 font-bold text-sm hover:text-blue-700">Ver todas →</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                ${upcomingRes.slice(0, 3).map(res => {
+                    const amenity = DATA.amenities.find(a => a.name === res.amenity);
+                    return `
+                    <div class="border-2 rounded-xl p-4 hover:shadow-md transition">
+                        <div class="text-2xl mb-2">${amenity ? amenity.icon : '📌'}</div>
+                        <h4 class="font-bold text-slate-900">${res.amenity}</h4>
+                        <p class="text-sm text-slate-500 mt-1">${res.date} • ${res.timeSlot}</p>
+                        <div class="mt-2">${Badge(res.status, res.status === 'Confirmada' ? 'green' : 'yellow')}</div>
+                    </div>
+                `}).join('')}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Comunicados recientes -->
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8 mb-6 md:mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-base md:text-lg">📢 Comunicados Recientes</h3>
+                <a href="#/app/comunicados" class="text-blue-600 font-bold text-sm hover:text-blue-700">Ver todos →</a>
+            </div>
+            <div class="space-y-3">
+                ${recentComunicados.map(c => `
+                    <div class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${
+                            c.priority === 'Alta' ? 'bg-rose-100' : c.priority === 'Media' ? 'bg-amber-100' : 'bg-blue-100'
+                        }">${c.type === 'Urgente' ? '🚨' : c.type === 'Mantenimiento' ? '🔧' : c.type === 'Aviso' ? '📋' : 'ℹ️'}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="font-bold text-sm text-slate-900">${c.title}</h4>
+                                ${Badge(c.priority, c.priority === 'Alta' ? 'red' : c.priority === 'Media' ? 'yellow' : 'gray')}
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">${c.date}</p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <!-- Tickets abiertos -->
+        ${openTickets.length > 0 ? `
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8">
+            <h3 class="font-bold text-base md:text-lg mb-4">🔧 Mis Tickets Abiertos</h3>
+            <div class="space-y-3">
+                ${openTickets.map(t => `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 border rounded-xl">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">${t.title}</h4>
+                            <p class="text-xs text-slate-500">${t.category} • ${t.date}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            ${Badge(t.priority, t.priority === 'Alta' ? 'red' : 'yellow')}
+                            ${Badge(t.status, t.status === 'En Progreso' ? 'blue' : 'yellow')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
+}
+
+function renderResidentBilling() {
+    const r = DATA.resident;
+    const completed = r.payments.filter(p => p.status === 'Completado');
+    const pending = r.payments.filter(p => p.status === 'Pendiente');
+    const totalPaid = completed.reduce((sum, p) => sum + p.amount, 0);
+
+    return `
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Mis Pagos</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Unidad ${r.unit} • Renta S/ ${r.contract.rent.toLocaleString()} • Día ${r.contract.day} de cada mes</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Total Pagado</p>
+                <h2 class="text-2xl md:text-3xl font-black text-emerald-600 mb-2">S/ ${totalPaid.toLocaleString()}</h2>
+                <p class="text-xs font-bold text-slate-500">${completed.length} pagos realizados</p>
+            </div>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Próximo Pago</p>
+                <h2 class="text-2xl md:text-3xl font-black text-blue-600 mb-2">${pending.length > 0 ? 'S/ ' + pending[0].amount.toLocaleString() : 'Al día'}</h2>
+                <p class="text-xs font-bold text-slate-500">${pending.length > 0 ? pending[0].month : 'No hay pendientes'}</p>
+            </div>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Estado de Cuenta</p>
+                <h2 class="text-2xl md:text-3xl font-black ${pending.length > 0 ? 'text-amber-600' : 'text-emerald-600'} mb-2">${pending.length > 0 ? 'Pendiente' : 'Al día ✅'}</h2>
+                <p class="text-xs font-bold text-slate-500">Contrato ${r.contract.start} → ${r.contract.end}</p>
+            </div>
+        </div>
+
+        ${pending.length > 0 ? `
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h3 class="font-bold text-blue-900">💳 Pago pendiente: ${pending[0].month}</h3>
+                <p class="text-sm text-blue-700 mt-1">Monto: S/ ${pending[0].amount.toLocaleString()} • Vence el día ${r.contract.day}</p>
+            </div>
+            <button onclick="notify('Redirigiendo a pasarela de pago...')" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">Pagar Ahora</button>
+        </div>
+        ` : ''}
+
+        <div class="bg-white rounded-2xl md:rounded-3xl border overflow-hidden">
+            <div class="p-4 md:p-6 border-b bg-slate-50">
+                <h3 class="font-black text-base md:text-lg">Historial de Pagos</h3>
+            </div>
+            <div class="table-responsive">
+            <table class="w-full text-left text-sm min-w-[500px]">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Mes</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Monto</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Fecha Pago</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Método</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${r.payments.map(p => `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-4 md:p-6 font-bold text-slate-900">${p.month}</td>
+                            <td class="p-4 md:p-6 font-bold text-slate-900">S/ ${p.amount.toLocaleString()}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${p.date || '-'}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${p.method}</td>
+                            <td class="p-4 md:p-6">${Badge(p.status, p.status === 'Completado' ? 'green' : 'yellow')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    `;
+}
+
+function renderResidentComunicados() {
+    const comunicados = DATA.comunicados.sort((a, b) => b.date.localeCompare(a.date));
+    return `
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">📢 Comunicados</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Avisos y noticias del edificio</p>
+        </div>
+        <div class="space-y-4">
+            ${comunicados.map(c => `
+                <div class="bg-white rounded-2xl border-2 ${
+                    c.priority === 'Alta' ? 'border-rose-200' : c.priority === 'Media' ? 'border-amber-200' : 'border-slate-200'
+                } p-4 md:p-6 hover:shadow-lg transition">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${
+                                c.priority === 'Alta' ? 'bg-rose-100' : c.priority === 'Media' ? 'bg-amber-100' : 'bg-blue-100'
+                            }">${c.type === 'Urgente' ? '🚨' : c.type === 'Mantenimiento' ? '🔧' : c.type === 'Aviso' ? '📋' : 'ℹ️'}</div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-900">${c.title}</h3>
+                                <p class="text-sm text-slate-500 mt-0.5">${c.date} • ${c.type}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            ${Badge(c.priority, c.priority === 'Alta' ? 'red' : c.priority === 'Media' ? 'yellow' : 'gray')}
+                            ${Badge(c.type, c.type === 'Urgente' ? 'red' : 'blue')}
+                        </div>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed ml-0 sm:ml-13">${c.body}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderResidentCommunity() {
+    const r = DATA.resident;
+    const myTickets = DATA.tickets.filter(t => t.resident === r.name);
+    const openTickets = myTickets.filter(t => t.status !== 'Cerrado');
+
+    return `
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Soporte</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">Mis tickets y solicitudes de mantenimiento</p>
+            </div>
+            <button onclick="notify('Crear nuevo ticket próximamente')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">+ Nuevo Ticket</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 md:gap-6 mb-6 md:mb-8">
+            ${kpiCard('Abiertos', openTickets.length, openTickets.length > 0 ? 'red' : 'green', openTickets.length > 0 ? 'Pendientes' : 'Todo resuelto')}
+            ${kpiCard('Total', myTickets.length, 'gray', 'Historial completo')}
+        </div>
+
+        <div class="space-y-3">
+            ${myTickets.length > 0 ? myTickets.map(t => `
+                <div class="p-4 md:p-6 bg-white border-2 rounded-xl md:rounded-2xl hover:shadow-lg transition">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <h3 class="font-bold text-base text-slate-900">${t.title}</h3>
+                                ${Badge(t.priority, t.priority === 'Alta' ? 'red' : t.priority === 'Media' ? 'yellow' : 'gray')}
+                            </div>
+                            <p class="text-sm text-slate-500">${t.category} • Unidad ${t.unit} • ${t.date}</p>
+                        </div>
+                        ${Badge(t.status, t.status === 'Cerrado' ? 'green' : t.status === 'En Progreso' ? 'blue' : 'yellow')}
+                    </div>
+                </div>
+            `).join('') : '<div class="text-center py-12 text-slate-400"><p class="text-4xl mb-4">🎉</p><p class="font-bold">No tienes tickets. ¡Todo bien!</p></div>'}
+        </div>
+    `;
+}
+
+function renderResidentReservations() {
+    const r = DATA.resident;
+    const myReservations = DATA.reservations.filter(res => res.resident === r.name);
+    const upcoming = myReservations.filter(res => res.date >= '2026-02-08' && res.status !== 'Cancelada').sort((a, b) => a.date.localeCompare(b.date));
+    const past = myReservations.filter(res => res.date < '2026-02-08' || res.status === 'Cancelada');
+    const availableAmenities = DATA.amenities.filter(a => a.status === 'Disponible');
+
+    // Generar mini calendario de febrero 2026
+    const daysInFeb = 28;
+    const firstDay = 0; // Feb 1, 2026 = Sunday
+    const today = 8;
+    const reservedDays = myReservations.filter(res => res.date.startsWith('2026-02') && res.status !== 'Cancelada').map(res => parseInt(res.date.split('-')[2]));
+    let calendarHTML = '';
+    const dayNames = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'];
+    calendarHTML += dayNames.map(d => `<div class="text-center text-[10px] font-black text-slate-400 uppercase py-2">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) calendarHTML += '<div></div>';
+    for (let d = 1; d <= daysInFeb; d++) {
+        const isToday = d === today;
+        const isReserved = reservedDays.includes(d);
+        const isPast = d < today;
+        calendarHTML += `<div class="text-center py-1.5 text-sm font-bold rounded-lg cursor-pointer transition ${
+            isToday ? 'bg-blue-600 text-white' :
+            isReserved ? 'bg-emerald-100 text-emerald-700' :
+            isPast ? 'text-slate-300' :
+            'text-slate-700 hover:bg-blue-50'
+        }">${d}</div>`;
+    }
+
+    return `
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">🗓 Mis Reservas</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Reserva las áreas comunes de tu edificio</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mb-6 md:mb-8">
+            <!-- Calendario -->
+            <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6">
+                <h3 class="font-bold text-base md:text-lg mb-4">Febrero 2026</h3>
+                <div class="grid grid-cols-7 gap-1">
+                    ${calendarHTML}
+                </div>
+                <div class="mt-4 flex flex-wrap gap-3 text-xs">
+                    <div class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-blue-600"></div> Hoy</div>
+                    <div class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-emerald-100 border border-emerald-300"></div> Con reserva</div>
+                </div>
+            </div>
+
+            <!-- Amenidades disponibles -->
+            <div class="lg:col-span-2 bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6">
+                <h3 class="font-bold text-base md:text-lg mb-4">Áreas Comunes Disponibles</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    ${availableAmenities.map(a => `
+                        <div class="border-2 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition cursor-pointer" onclick="notify('Reservar ${a.name} próximamente')">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-2xl">${a.icon}</span>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">${a.name}</h4>
+                                    <p class="text-xs text-slate-500">Capacidad: ${a.capacity} personas</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-2">🕐 ${a.hours}</p>
+                            <p class="text-[10px] text-slate-400 italic">${a.rules}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
+        <!-- Próximas reservas -->
+        ${upcoming.length > 0 ? `
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6 mb-6 md:mb-8">
+            <h3 class="font-bold text-base md:text-lg mb-4">📅 Próximas Reservas</h3>
+            <div class="space-y-3">
+                ${upcoming.map(res => {
+                    const amenity = DATA.amenities.find(a => a.name === res.amenity);
+                    return `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 border rounded-xl hover:bg-slate-50 transition">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${amenity ? amenity.icon : '📌'}</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900">${res.amenity}</h4>
+                                <p class="text-sm text-slate-500">${res.date} • ${res.timeSlot}${res.guests > 0 ? ' • ' + res.guests + ' invitados' : ''}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            ${Badge(res.status, res.status === 'Confirmada' ? 'green' : 'yellow')}
+                            <button onclick="notify('Cancelar reserva #${res.id}')" class="px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg font-bold text-xs hover:bg-rose-100 transition">Cancelar</button>
+                        </div>
+                    </div>
+                `}).join('')}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Historial -->
+        ${past.length > 0 ? `
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6">
+            <h3 class="font-bold text-base md:text-lg mb-4 text-slate-400">Historial</h3>
+            <div class="space-y-2">
+                ${past.map(res => {
+                    const amenity = DATA.amenities.find(a => a.name === res.amenity);
+                    return `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-xl text-slate-400">
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg">${amenity ? amenity.icon : '📌'}</span>
+                            <div>
+                                <h4 class="font-medium">${res.amenity}</h4>
+                                <p class="text-xs">${res.date} • ${res.timeSlot}</p>
+                            </div>
+                        </div>
+                        ${Badge(res.status, res.status === 'Cancelada' ? 'red' : 'gray')}
+                    </div>
+                `}).join('')}
+            </div>
+        </div>
+        ` : ''}
+    `;
+}
+
+// --- ADMIN RESERVATIONS ---
+
+function renderAdminReservations() {
+    const allRes = DATA.reservations;
+    const confirmed = allRes.filter(r => r.status === 'Confirmada');
+    const pending = allRes.filter(r => r.status === 'Pendiente');
+    const cancelled = allRes.filter(r => r.status === 'Cancelada');
+
+    // Uso por amenidad
+    const amenityUsage = {};
+    DATA.amenities.forEach(a => {
+        amenityUsage[a.name] = allRes.filter(r => r.amenity === a.name && r.status !== 'Cancelada').length;
+    });
+    const maxUsage = Math.max(...Object.values(amenityUsage), 1);
+
+    return `
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Reservaciones</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">Gestión de áreas comunes y reservas de residentes</p>
+            </div>
+            <button onclick="notify('Crear reserva manual próximamente')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">+ Nueva Reserva</button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+            ${kpiCard('Total Reservas', allRes.length, 'blue', 'Este mes')}
+            ${kpiCard('Confirmadas', confirmed.length, 'green', Math.round(confirmed.length / allRes.length * 100) + '%')}
+            ${kpiCard('Pendientes', pending.length, 'red', 'Por aprobar')}
+            ${kpiCard('Canceladas', cancelled.length, 'gray', 'Este mes')}
+        </div>
+
+        <!-- Amenidades y uso -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-8">
+            <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6">
+                <h3 class="font-bold text-base md:text-lg mb-4">📊 Uso por Amenidad</h3>
+                <div class="space-y-3">
+                    ${DATA.amenities.map(a => {
+                        const usage = amenityUsage[a.name] || 0;
+                        const pct = Math.round(usage / maxUsage * 100);
+                        return `
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-bold text-slate-700">${a.icon} ${a.name}</span>
+                                <span class="text-sm font-black text-slate-900">${usage} reservas</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full"><div class="bg-blue-600 h-full rounded-full transition-all" style="width: ${pct}%"></div></div>
+                        </div>
+                    `}).join('')}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-6">
+                <h3 class="font-bold text-base md:text-lg mb-4">🏢 Estado de Amenidades</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    ${DATA.amenities.map(a => `
+                        <div class="border rounded-xl p-4 flex items-center gap-3">
+                            <span class="text-2xl">${a.icon}</span>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-sm text-slate-900 truncate">${a.name}</h4>
+                                <p class="text-xs text-slate-500">${a.hours}</p>
+                            </div>
+                            ${Badge(a.status, a.status === 'Disponible' ? 'green' : 'yellow')}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de reservaciones -->
+        <div class="bg-white rounded-2xl md:rounded-3xl border overflow-hidden">
+            <div class="p-4 md:p-6 border-b bg-slate-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <h3 class="font-black text-base md:text-lg">Todas las Reservaciones</h3>
+                <div class="flex gap-2 flex-wrap">
+                    ${Badge(confirmed.length + ' Confirmadas', 'green')}
+                    ${Badge(pending.length + ' Pendientes', 'yellow')}
+                    ${Badge(cancelled.length + ' Canceladas', 'red')}
+                </div>
+            </div>
+            <div class="table-responsive">
+            <table class="w-full text-left text-sm min-w-[700px]">
+                <thead class="bg-slate-50 border-b">
+                    <tr>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Amenidad</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Residente</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Horario</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Invitados</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Estado</th>
+                        <th class="p-4 md:p-6 font-black text-xs uppercase text-slate-600">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${allRes.sort((a, b) => a.date.localeCompare(b.date)).map(r => {
+                        const amenity = DATA.amenities.find(a => a.name === r.amenity);
+                        return `
+                        <tr class="border-b hover:bg-slate-50 transition">
+                            <td class="p-4 md:p-6 font-bold text-slate-900">${amenity ? amenity.icon : ''} ${r.amenity}</td>
+                            <td class="p-4 md:p-6 text-slate-700 font-medium">${r.resident}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${r.unit}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${r.date}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${r.timeSlot}</td>
+                            <td class="p-4 md:p-6 text-slate-600">${r.guests}</td>
+                            <td class="p-4 md:p-6">${Badge(r.status, r.status === 'Confirmada' ? 'green' : r.status === 'Pendiente' ? 'yellow' : 'red')}</td>
+                            <td class="p-4 md:p-6">
+                                ${r.status === 'Pendiente' ? `
+                                    <button onclick="notify('Aprobar reserva #${r.id}')" class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg font-bold text-xs hover:bg-emerald-100 transition mr-1">Aprobar</button>
+                                    <button onclick="notify('Rechazar reserva #${r.id}')" class="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg font-bold text-xs hover:bg-rose-100 transition">Rechazar</button>
+                                ` : r.status === 'Confirmada' ? `
+                                    <button onclick="notify('Cancelar reserva #${r.id}')" class="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg font-bold text-xs hover:bg-rose-100 transition">Cancelar</button>
+                                ` : '<span class="text-slate-400 text-xs">-</span>'}
+                            </td>
+                        </tr>
+                    `}).join('')}
+                </tbody>
+            </table>
+            </div>
         </div>
     `;
 }
