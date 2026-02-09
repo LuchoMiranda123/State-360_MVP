@@ -84,7 +84,7 @@ const DATA = {
         email: "contacto@hommie.pe",
         plan: "Premium",
         billingDay: 1
-    }
+    },
 
     // Datos específicos para KPIs
     kpiHistory: {
