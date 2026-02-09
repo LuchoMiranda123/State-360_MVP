@@ -135,20 +135,20 @@ const Router = {
 
 function renderLanding() {
     document.getElementById('main-content').innerHTML = `
-        <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-sm glass-header">
+        <nav class="bg-white border-b px-4 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-40 shadow-sm glass-header">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold italic shadow-lg">S</div>
-                <span class="text-xl font-bold tracking-tight">State 360</span>
+                <span class="text-lg md:text-xl font-bold tracking-tight">State 360</span>
             </div>
-            <div class="flex items-center space-x-6">
-                <button onclick="Router.navigate('#/login')" class="px-4 py-2 text-slate-600 font-semibold hover:text-blue-600 transition">Iniciar sesión</button>
-                <button onclick="Router.navigate('#/login')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 transition">Empezar ahora</button>
+            <div class="flex items-center space-x-3 md:space-x-6">
+                <button onclick="Router.navigate('#/login')" class="hidden sm:inline-block px-4 py-2 text-slate-600 font-semibold hover:text-blue-600 transition">Iniciar sesión</button>
+                <button onclick="Router.navigate('#/login')" class="px-4 md:px-6 py-2 md:py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-100 transition text-sm md:text-base">Empezar ahora</button>
             </div>
         </nav>
-        <main class="max-w-6xl mx-auto px-6 py-24 text-center">
-            <h1 class="text-6xl md:text-7xl font-black text-slate-900 mb-8 leading-tight">Software Multifamily <br/><span class="text-blue-600">para el Perú.</span></h1>
-            <p class="text-xl text-slate-500 mb-12 max-w-3xl mx-auto">La solución líder para la gestión profesional de arriendos.</p>
-            <button onclick="Router.navigate('#/login')" class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold shadow-2xl hover:bg-black transition">Probar Prototipo Interactivo</button>
+        <main class="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-24 text-center">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 mb-6 md:mb-8 leading-tight">Software Multifamily <br/><span class="text-blue-600">para el Perú.</span></h1>
+            <p class="text-base md:text-xl text-slate-500 mb-8 md:mb-12 max-w-3xl mx-auto">La solución líder para la gestión profesional de arriendos.</p>
+            <button onclick="Router.navigate('#/login')" class="px-8 md:px-10 py-4 md:py-5 bg-slate-900 text-white rounded-2xl font-bold shadow-2xl hover:bg-black transition text-sm md:text-base">Probar Prototipo Interactivo</button>
         </main>
     `;
 }
@@ -201,51 +201,77 @@ function selectOrg(id) { DATA.currentOrg = DATA.orgs.find(o => o.id === id); Rou
 
 function renderAppLayout(subview) {
     const isResident = DATA.userRole === "RESIDENTE";
+    const sidebarNav = isResident ? `
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2 px-4 tracking-widest">Inquilino</div>
+        ${navItem('Dashboard', 'dashboard', 'home', subview)}
+        ${navItem('Mis Pagos', 'billing', 'billing', subview)}
+        ${navItem('Soporte', 'community', 'community', subview)}
+    ` : `
+        ${navItem('Resumen', 'dashboard', 'home', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Estrategia</div>
+        ${navItem('Análisis / KPIs', 'analytics', 'chart', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Módulos</div>
+        ${navItem('Leads / CRM', 'leasing', 'users', subview)}
+        ${navItem('Propiedades', 'properties', 'building', subview)}
+        ${navItem('Contratos', 'leases', 'billing', subview)}
+        ${navItem('Cobranza', 'billing', 'billing', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Operación</div>
+        ${navItem('Comunidad', 'community', 'community', subview)}
+        ${navItem('Inspecciones', 'inspections', 'inspection', subview)}
+        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Sistema</div>
+        ${navItem('Configuración', 'settings', 'settings', subview)}
+    `;
+
+    const sidebarContent = `
+        <div class="p-5 flex items-center justify-between border-b">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold italic">S</div>
+                <span class="text-xl font-black">State 360</span>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden p-1 text-slate-400 hover:text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+            ${sidebarNav}
+        </nav>
+        <div class="p-4 border-t">
+            <button onclick="DATA.isLoggedIn=false; Router.navigate('#/login')" class="w-full text-left px-4 py-3 text-slate-400 text-sm font-bold hover:text-slate-600 transition flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Cerrar Sesión
+            </button>
+        </div>
+    `;
+
     document.getElementById('main-content').innerHTML = `
         <div class="flex h-screen overflow-hidden">
-            <aside class="w-64 bg-white border-r flex flex-col flex-shrink-0">
-                <div class="p-6 flex items-center space-x-2 border-b">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold italic">S</div>
-                    <span class="text-xl font-black">State 360</span>
-                </div>
-                <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
-                    ${isResident ? `
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2 px-4 tracking-widest">Inquilino</div>
-                        ${navItem('Dashboard', 'dashboard', 'home', subview)}
-                        ${navItem('Mis Pagos', 'billing', 'billing', subview)}
-                        ${navItem('Soporte', 'community', 'community', subview)}
-                    ` : `
-                        ${navItem('Resumen', 'dashboard', 'home', subview)}
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Estrategia</div>
-                        ${navItem('Análisis / KPIs', 'analytics', 'chart', subview)}
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Módulos</div>
-                        ${navItem('Leads / CRM', 'leasing', 'users', subview)}
-                        ${navItem('Propiedades', 'properties', 'building', subview)}
-                        ${navItem('Contratos', 'leases', 'billing', subview)}
-                        ${navItem('Cobranza', 'billing', 'billing', subview)}
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Operación</div>
-                        ${navItem('Comunidad', 'community', 'community', subview)}
-                        ${navItem('Inspecciones', 'inspections', 'inspection', subview)}
-                        <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Sistema</div>
-                        ${navItem('Configuración', 'settings', 'settings', subview)}
-                    `}
-                </nav>
-                <div class="p-4 border-t">
-                    <button onclick="DATA.isLoggedIn=false; Router.navigate('#/login')" class="w-full text-left px-4 py-3 text-slate-400 text-sm font-bold hover:text-slate-600 transition flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Cerrar Sesión
-                    </button>
-                </div>
+            <!-- Overlay mobile -->
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 sidebar-overlay md:hidden" onclick="toggleSidebar()"></div>
+
+            <!-- Sidebar desktop -->
+            <aside class="hidden md:flex w-64 bg-white border-r flex-col flex-shrink-0">
+                ${sidebarContent}
             </aside>
-            <main class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
-                <header class="h-16 bg-white border-b px-8 flex items-center justify-between glass-header">
-                    <span class="font-bold text-slate-600 uppercase text-xs tracking-widest">${DATA.currentOrg.name}</span>
-                    <div class="flex items-center space-x-4">
+
+            <!-- Sidebar mobile -->
+            <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r flex flex-col sidebar-mobile md:hidden">
+                ${sidebarContent}
+            </aside>
+
+            <main class="flex-1 flex flex-col bg-slate-50 overflow-hidden w-full">
+                <header class="h-14 md:h-16 bg-white border-b px-4 md:px-8 flex items-center justify-between glass-header flex-shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleSidebar()" class="md:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <span class="font-bold text-slate-600 uppercase text-[10px] md:text-xs tracking-widest truncate">${DATA.currentOrg.name}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 md:space-x-4">
                         ${Badge(DATA.userRole, 'blue')}
-                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold">JD</div>
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-sm md:text-base">JD</div>
                     </div>
                 </header>
-                <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
                     ${renderSubViewContent(subview)}
                 </div>
             </main>
@@ -256,7 +282,7 @@ function renderAppLayout(subview) {
 function navItem(label, key, icon, current) {
     const active = key === current;
     return `
-        <a href="#/app/${key}" class="flex items-center px-4 py-3 rounded-xl font-bold text-sm transition group ${active ? 'sidebar-item-active' : 'text-slate-600 hover:bg-slate-50'}">
+        <a href="#/app/${key}" onclick="closeSidebar()" class="flex items-center px-4 py-3 rounded-xl font-bold text-sm transition group ${active ? 'sidebar-item-active' : 'text-slate-600 hover:bg-slate-50'}">
             <span class="mr-4 ${active ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}">${Icon(icon)}</span> ${label}
         </a>
     `;
@@ -282,17 +308,17 @@ function renderSubViewContent(view) {
 
 function renderDashboard() {
     return `
-        <div class="mb-10"><h1 class="text-3xl font-black text-slate-900">Resumen Operativo</h1></div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div class="mb-6 md:mb-10"><h1 class="text-2xl md:text-3xl font-black text-slate-900">Resumen Operativo</h1></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-10">
             ${kpiCard('Ocupación', '94.2%', 'blue', 'En meta')}
             ${kpiCard('Morosidad', '3.1%', 'red', 'Crítico: 2')}
             ${kpiCard('Recaudación', 'S/ 142.5k', 'green', '92% recaudado')}
             ${kpiCard('Unidades', DATA.currentOrg.units, 'gray', 'Total org')}
         </div>
-        <div class="bg-white rounded-3xl border p-8">
-            <h3 class="font-bold text-xl mb-6">Actividad Reciente</h3>
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8">
+            <h3 class="font-bold text-lg md:text-xl mb-4 md:mb-6">Actividad Reciente</h3>
             <div class="divide-y">
-                ${DATA.leads.slice(0, 3).map(l => `<div class="py-4 flex justify-between items-center"><div class="font-bold text-slate-800">${l.name} <span class="text-slate-400 font-medium text-xs ml-2">Interesado en ${l.unit}</span></div> ${Badge(l.stage, 'yellow')}</div>`).join('')}
+                ${DATA.leads.slice(0, 3).map(l => `<div class="py-3 md:py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1"><div class="font-bold text-slate-800 text-sm md:text-base">${l.name} <span class="text-slate-400 font-medium text-xs ml-1 md:ml-2">Interesado en ${l.unit}</span></div> ${Badge(l.stage, 'yellow')}</div>`).join('')}
             </div>
         </div>
     `;
@@ -301,10 +327,10 @@ function renderDashboard() {
 function kpiCard(title, val, color, sub) {
     const colors = { blue: 'text-blue-600 bg-blue-50', red: 'text-rose-600 bg-rose-50', green: 'text-emerald-600 bg-emerald-50', gray: 'text-slate-600 bg-slate-50' };
     return `
-        <div class="bg-white p-8 rounded-3xl border shadow-sm">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">${title}</p>
-            <h2 class="text-3xl font-black text-slate-900 mb-2">${val}</h2>
-            <span class="text-xs font-bold ${colors[color]} px-2 py-1 rounded-lg">${sub}</span>
+        <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">${title}</p>
+            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-1 md:mb-2">${val}</h2>
+            <span class="text-[10px] md:text-xs font-bold ${colors[color]} px-2 py-1 rounded-lg">${sub}</span>
         </div>
     `;
 }
@@ -313,25 +339,25 @@ function kpiCard(title, val, color, sub) {
 
 function renderKPIs() {
     return `
-        <div class="mb-10 flex justify-between items-center">
+        <div class="mb-6 md:mb-10 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-black text-slate-900">Análisis Operativo (KPIs)</h1>
-                <p class="text-slate-500 font-medium">Métricas clave de rendimiento Multifamily</p>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Análisis Operativo (KPIs)</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">Métricas clave de rendimiento Multifamily</p>
             </div>
-            <div class="bg-white border rounded-xl p-1 flex">
-                <button class="px-4 py-1.5 bg-slate-100 rounded-lg text-xs font-bold text-slate-800">Mensual</button>
-                <button class="px-4 py-1.5 text-xs font-bold text-slate-400">Trimestral</button>
-                <button class="px-4 py-1.5 text-xs font-bold text-slate-400">Anual</button>
+            <div class="bg-white border rounded-xl p-1 flex self-start">
+                <button class="px-3 md:px-4 py-1.5 bg-slate-100 rounded-lg text-xs font-bold text-slate-800">Mensual</button>
+                <button class="px-3 md:px-4 py-1.5 text-xs font-bold text-slate-400">Trimestral</button>
+                <button class="px-3 md:px-4 py-1.5 text-xs font-bold text-slate-400">Anual</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-            <div class="lg:col-span-2 bg-white p-8 rounded-3xl border shadow-sm">
-                <div class="flex justify-between items-center mb-10">
-                    <h3 class="font-bold text-xl">Ocupación Histórica (%)</h3>
-                    <span class="text-emerald-500 font-black text-sm">+6.8% vs Mayo</span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mb-6 md:mb-10">
+            <div class="lg:col-span-2 bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <div class="flex justify-between items-center mb-6 md:mb-10">
+                    <h3 class="font-bold text-base md:text-xl">Ocupación Histórica (%)</h3>
+                    <span class="text-emerald-500 font-black text-xs md:text-sm">+6.8% vs Mayo</span>
                 </div>
-                <div class="flex items-end justify-between h-48 space-x-4">
+                <div class="flex items-end justify-between h-36 md:h-48 space-x-2 md:space-x-4">
                     ${DATA.kpiHistory.occupancy.map((val, i) => `
                         <div class="flex-1 flex flex-col items-center group">
                             <div class="relative w-full bg-blue-50 rounded-t-lg chart-bar overflow-hidden" style="height: ${val}%">
@@ -344,10 +370,10 @@ function renderKPIs() {
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl border shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm flex flex-col justify-between">
                 <div>
-                    <h3 class="font-bold text-xl mb-2">Tenant Health Score</h3>
-                    <p class="text-slate-400 text-sm font-medium mb-8">Basado en NPS y puntualidad de pago</p>
+                    <h3 class="font-bold text-base md:text-xl mb-2">Tenant Health Score</h3>
+                    <p class="text-slate-400 text-xs md:text-sm font-medium mb-4 md:mb-8">Basado en NPS y puntualidad de pago</p>
                     <div class="relative flex items-center justify-center mb-8">
                         <svg class="w-40 h-40 transform -rotate-90">
                             <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="12" fill="transparent" class="text-slate-100" />
@@ -366,9 +392,9 @@ function renderKPIs() {
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Eficiencia de Mantenimiento</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 md:mb-6">Eficiencia de Mantenimiento</h4>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-bold text-slate-700">Tiempo de cierre (TTR)</span>
                     <span class="text-xl font-black">3.2 días</span>
@@ -380,8 +406,8 @@ function renderKPIs() {
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Morosidad Crítica</h4>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 md:mb-6">Morosidad Crítica</h4>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-bold text-slate-700">Total Adeudado</span>
                     <span class="text-xl font-black text-rose-600">S/ ${DATA.delinquents.reduce((sum, d) => sum + d.amountDue, 0).toLocaleString()}</span>
@@ -397,8 +423,8 @@ function renderKPIs() {
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Churn Rate (Rotación)</h4>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 md:mb-6">Churn Rate (Rotación)</h4>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-bold text-slate-700">Tasa Mensual</span>
                     <span class="text-xl font-black">1.8%</span>
@@ -410,8 +436,8 @@ function renderKPIs() {
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Leasing Pipeline Velocity</h4>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 md:mb-6">Leasing Pipeline Velocity</h4>
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-bold text-slate-700">Conversión Final</span>
                     <span class="text-xl font-black">12.4%</span>
@@ -446,12 +472,12 @@ function renderLeasing() {
     };
 
     return `
-        <div class="mb-8 flex justify-between items-center">
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div>
-                <h1 class="text-3xl font-black text-slate-900">Pipeline de Leasing</h1>
-                <p class="text-slate-500 font-medium">${DATA.leads.length} leads activos en proceso</p>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Pipeline de Leasing</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leads.length} leads activos en proceso</p>
             </div>
-            <button onclick="notify('Función de agregar lead próximamente')" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">+ Nuevo Lead</button>
+            <button onclick="notify('Función de agregar lead próximamente')" class="self-start px-5 md:px-6 py-2.5 md:py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm md:text-base">+ Nuevo Lead</button>
         </div>
 
         <div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
@@ -497,9 +523,9 @@ function renderLeasing() {
             `).join('')}
         </div>
 
-        <div class="mt-8 bg-white rounded-2xl border p-6">
-            <h3 class="font-bold text-lg mb-4">Métricas del Pipeline</h3>
-            <div class="grid grid-cols-4 gap-6">
+        <div class="mt-6 md:mt-8 bg-white rounded-2xl border p-4 md:p-6">
+            <h3 class="font-bold text-base md:text-lg mb-4">Métricas del Pipeline</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 <div class="text-center">
                     <p class="text-2xl font-black text-blue-600">${DATA.leads.length}</p>
                     <p class="text-xs font-bold text-slate-500 uppercase mt-1">Total Leads</p>
@@ -525,13 +551,13 @@ function renderLeasing() {
 
 function renderProperties() {
     return `
-        <h2 class="text-2xl font-bold mb-4">Propiedades</h2>
-        <div class="grid grid-cols-2 gap-8">
+        <h2 class="text-xl md:text-2xl font-bold mb-4">Propiedades</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
             ${DATA.properties.map(p => `
-                <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                    <img src="${p.img}" class="h-32 w-full object-cover rounded-2xl mb-4">
-                    <h3 class="font-bold text-xl">${p.name}</h3>
-                    <p class="text-slate-500 font-medium">${p.address}</p>
+                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                    <img src="${p.img}" class="h-32 w-full object-cover rounded-xl md:rounded-2xl mb-4">
+                    <h3 class="font-bold text-lg md:text-xl">${p.name}</h3>
+                    <p class="text-slate-500 font-medium text-sm md:text-base">${p.address}</p>
                 </div>
             `).join('')}
         </div>
@@ -542,18 +568,18 @@ function renderProperties() {
 
 function renderUnits() {
     return `
-        <div class="mb-8 flex justify-between items-center">
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div>
-                <h1 class="text-3xl font-black text-slate-900">Unidades</h1>
-                <p class="text-slate-500 font-medium">${DATA.units.length} unidades en total</p>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Unidades</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.units.length} unidades en total</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-2 md:gap-3 flex-wrap">
                 ${Badge(DATA.units.filter(u => u.status === 'Ocupada').length + ' Ocupadas', 'green')}
                 ${Badge(DATA.units.filter(u => u.status === 'Disponible').length + ' Disponibles', 'blue')}
                 ${Badge(DATA.units.filter(u => u.status === 'Mantenimiento').length + ' Mantenimiento', 'yellow')}
             </div>
         </div>
-        <div class="bg-white rounded-3xl border overflow-hidden">
+        <div class="bg-white rounded-2xl md:rounded-3xl border overflow-hidden table-responsive">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 border-b">
                     <tr>
@@ -588,21 +614,21 @@ function renderUnits() {
 
 function renderLeases() {
     return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
-            <p class="text-slate-500 font-medium">${DATA.leases.length} contratos activos</p>
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leases.length} contratos activos</p>
         </div>
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-4 md:gap-6">
             ${DATA.leases.map(lease => `
-                <div class="bg-white rounded-3xl border p-8 hover:shadow-lg transition">
-                    <div class="flex justify-between items-start mb-6">
+                <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start mb-4 md:mb-6">
                         <div>
-                            <h3 class="text-xl font-black text-slate-900 mb-2">${lease.tenant}</h3>
-                            <p class="text-slate-500 font-medium">Unidad: <span class="font-bold text-slate-700">${lease.unit}</span></p>
+                            <h3 class="text-lg md:text-xl font-black text-slate-900 mb-1 md:mb-2">${lease.tenant}</h3>
+                            <p class="text-slate-500 font-medium text-sm">Unidad: <span class="font-bold text-slate-700">${lease.unit}</span></p>
                         </div>
                         ${Badge(lease.status, lease.status === 'Activo' ? 'green' : 'yellow')}
                     </div>
-                    <div class="grid grid-cols-4 gap-6 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
                         <div>
                             <p class="text-[10px] font-black text-slate-400 uppercase mb-2">Fecha Inicio</p>
                             <p class="font-bold text-slate-900">${lease.start}</p>
@@ -620,10 +646,10 @@ function renderLeases() {
                             <p class="font-bold text-slate-900">Día ${lease.day}</p>
                         </div>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="notify('Ver contrato PDF')" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Ver Contrato</button>
-                        <button onclick="notify('Renovar contrato')" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-bold text-sm hover:bg-emerald-100 transition">Renovar</button>
-                        <button onclick="notify('Terminar contrato')" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg font-bold text-sm hover:bg-rose-100 transition">Terminar</button>
+                    <div class="flex flex-wrap gap-2 md:gap-3">
+                        <button onclick="notify('Ver contrato PDF')" class="px-3 md:px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-xs md:text-sm hover:bg-blue-100 transition">Ver Contrato</button>
+                        <button onclick="notify('Renovar contrato')" class="px-3 md:px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-bold text-xs md:text-sm hover:bg-emerald-100 transition">Renovar</button>
+                        <button onclick="notify('Terminar contrato')" class="px-3 md:px-4 py-2 bg-rose-50 text-rose-600 rounded-lg font-bold text-xs md:text-sm hover:bg-rose-100 transition">Terminar</button>
                     </div>
                 </div>
             `).join('')}
@@ -639,32 +665,33 @@ function renderBilling() {
     const totalDelinquent = DATA.delinquents.reduce((sum, d) => sum + d.amountDue, 0);
 
     return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Cobranza y Facturación</h1>
-            <p class="text-slate-500 font-medium">Gestión de pagos y estado de cuentas</p>
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Cobranza y Facturación</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Gestión de pagos y estado de cuentas</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recaudado este mes</p>
-                <h2 class="text-3xl font-black text-emerald-600 mb-2">S/ ${totalCollected.toLocaleString()}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Recaudado este mes</p>
+                <h2 class="text-2xl md:text-3xl font-black text-emerald-600 mb-2">S/ ${totalCollected.toLocaleString()}</h2>
                 <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Completado').length} pagos completados</p>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendiente</p>
-                <h2 class="text-3xl font-black text-amber-600 mb-2">S/ ${totalPending.toLocaleString()}</h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Pendiente</p>
+                <h2 class="text-2xl md:text-3xl font-black text-amber-600 mb-2">S/ ${totalPending.toLocaleString()}</h2>
                 <p class="text-xs font-bold text-slate-500">${DATA.payments.filter(p => p.status === 'Pendiente').length} pagos pendientes</p>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Morosidad</p>
-                <h2 class="text-3xl font-black text-rose-600 mb-2">S/ ${totalDelinquent.toLocaleString()}</h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Morosidad</p>
+                <h2 class="text-2xl md:text-3xl font-black text-rose-600 mb-2">S/ ${totalDelinquent.toLocaleString()}</h2>
                 <p class="text-xs font-bold text-slate-500">${DATA.delinquents.length} inquilinos morosos</p>
             </div>
         </div>
-        <div class="bg-white rounded-3xl border overflow-hidden mb-8">
-            <div class="p-6 border-b bg-slate-50">
-                <h3 class="font-black text-lg">Pagos Recientes</h3>
+        <div class="bg-white rounded-2xl md:rounded-3xl border overflow-hidden mb-6 md:mb-8">
+            <div class="p-4 md:p-6 border-b bg-slate-50">
+                <h3 class="font-black text-base md:text-lg">Pagos Recientes</h3>
             </div>
-            <table class="w-full text-left text-sm">
+            <div class="table-responsive">
+            <table class="w-full text-left text-sm min-w-[600px]">
                 <thead class="bg-slate-50 border-b">
                     <tr>
                         <th class="p-6 font-black text-xs uppercase text-slate-600">Fecha</th>
@@ -688,12 +715,13 @@ function renderBilling() {
                     `).join('')}
                 </tbody>
             </table>
+            </div>
         </div>
-        <div class="bg-rose-50 border-2 border-rose-200 rounded-3xl p-8">
-            <h3 class="font-black text-lg text-rose-900 mb-4">⚠️ Inquilinos Morosos</h3>
-            <div class="space-y-4">
+        <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl md:rounded-3xl p-4 md:p-8">
+            <h3 class="font-black text-base md:text-lg text-rose-900 mb-4">⚠️ Inquilinos Morosos</h3>
+            <div class="space-y-3 md:space-y-4">
                 ${DATA.delinquents.map(d => `
-                    <div class="bg-white rounded-xl p-6 flex justify-between items-center">
+                    <div class="bg-white rounded-xl p-4 md:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                         <div>
                             <h4 class="font-bold text-slate-900">${d.tenant}</h4>
                             <p class="text-sm text-slate-600">Unidad ${d.unit} • ${d.daysLate} días de retraso</p>
@@ -716,31 +744,31 @@ function renderCommunity() {
     const openTickets = DATA.tickets.filter(t => t.status === 'Abierto' || t.status === 'En Progreso');
 
     return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
-            <p class="text-slate-500 font-medium">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tickets Abiertos</p>
-                <h2 class="text-4xl font-black text-amber-600 mb-2">${openTickets.length}</h2>
+        <div class="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Tickets Abiertos</p>
+                <h2 class="text-2xl md:text-4xl font-black text-amber-600 mb-2">${openTickets.length}</h2>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tiempo Promedio</p>
-                <h2 class="text-4xl font-black text-blue-600 mb-2">3.2<span class="text-lg">días</span></h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Tiempo Promedio</p>
+                <h2 class="text-2xl md:text-4xl font-black text-blue-600 mb-2">3.2<span class="text-sm md:text-lg">días</span></h2>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Satisfacción</p>
-                <h2 class="text-4xl font-black text-emerald-600 mb-2">4.8<span class="text-lg">/5</span></h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Satisfacción</p>
+                <h2 class="text-2xl md:text-4xl font-black text-emerald-600 mb-2">4.8<span class="text-sm md:text-lg">/5</span></h2>
             </div>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-3 md:space-y-4">
             ${DATA.tickets.map(t => `
-                <div class="p-6 bg-white border-2 rounded-2xl hover:shadow-lg transition">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="p-4 md:p-6 bg-white border-2 rounded-xl md:rounded-2xl hover:shadow-lg transition">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3 md:mb-4">
                         <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <h3 class="font-bold text-lg text-slate-900">${t.title}</h3>
+                            <div class="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
+                                <h3 class="font-bold text-base md:text-lg text-slate-900">${t.title}</h3>
                                 ${Badge(t.priority, t.priority === 'Alta' ? 'red' : t.priority === 'Media' ? 'yellow' : 'gray')}
                             </div>
                             <p class="text-sm text-slate-600">
@@ -769,30 +797,31 @@ function renderInspections() {
     const avgScore = completedInspections.length > 0 ? Math.round(completedInspections.reduce((sum, i) => sum + i.score, 0) / completedInspections.length) : 0;
 
     return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Inspecciones</h1>
-            <p class="text-slate-500 font-medium">Check-in, check-out y inspecciones rutinarias</p>
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Inspecciones</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Check-in, check-out y inspecciones rutinarias</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Completadas</p>
-                <h2 class="text-4xl font-black text-emerald-600 mb-2">${DATA.inspections.filter(i => i.status === 'Completado').length}</h2>
+        <div class="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Completadas</p>
+                <h2 class="text-2xl md:text-4xl font-black text-emerald-600 mb-2">${DATA.inspections.filter(i => i.status === 'Completado').length}</h2>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Pendientes</p>
-                <h2 class="text-4xl font-black text-amber-600 mb-2">${DATA.inspections.filter(i => i.status === 'Pendiente').length}</h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Pendientes</p>
+                <h2 class="text-2xl md:text-4xl font-black text-amber-600 mb-2">${DATA.inspections.filter(i => i.status === 'Pendiente').length}</h2>
             </div>
-            <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Score Promedio</p>
-                <h2 class="text-4xl font-black text-blue-600 mb-2">${avgScore}</h2>
+            <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-4">Score Promedio</p>
+                <h2 class="text-2xl md:text-4xl font-black text-blue-600 mb-2">${avgScore}</h2>
             </div>
         </div>
-        <div class="bg-white rounded-3xl border overflow-hidden">
-            <div class="p-6 border-b bg-slate-50 flex justify-between items-center">
-                <h3 class="font-black text-lg">Historial de Inspecciones</h3>
-                <button onclick="notify('Nueva inspección')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition">+ Nueva Inspección</button>
+        <div class="bg-white rounded-2xl md:rounded-3xl border overflow-hidden">
+            <div class="p-4 md:p-6 border-b bg-slate-50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <h3 class="font-black text-base md:text-lg">Historial de Inspecciones</h3>
+                <button onclick="notify('Nueva inspección')" class="self-start px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition">+ Nueva Inspección</button>
             </div>
-            <table class="w-full text-left text-sm">
+            <div class="table-responsive">
+            <table class="w-full text-left text-sm min-w-[700px]">
                 <thead class="bg-slate-50 border-b">
                     <tr>
                         <th class="p-6 font-black text-xs uppercase text-slate-600">Unidad</th>
@@ -820,6 +849,7 @@ function renderInspections() {
                     `).join('')}
                 </tbody>
             </table>
+            </div>
         </div>
     `;
 }
@@ -828,13 +858,13 @@ function renderInspections() {
 
 function renderSettings() {
     return `
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Configuración</h1>
-            <p class="text-slate-500 font-medium">Gestión de organización y suscripción</p>
+        <div class="mb-6 md:mb-8">
+            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Configuración</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">Gestión de organización y suscripción</p>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div class="lg:col-span-2 bg-white rounded-3xl border p-8">
-                <h3 class="font-black text-lg mb-6">Información de la Organización</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mb-6 md:mb-8">
+            <div class="lg:col-span-2 bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8">
+                <h3 class="font-black text-base md:text-lg mb-4 md:mb-6">Información de la Organización</h3>
                 <div class="space-y-6">
                     <div>
                         <label class="text-xs font-black text-slate-400 uppercase">Nombre</label>
@@ -860,7 +890,7 @@ function renderSettings() {
                     </div>
                 </div>
             </div>
-            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl border-2 border-blue-200 p-8">
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl md:rounded-3xl border-2 border-blue-200 p-4 md:p-8">
                 <div class="text-center mb-6">
                     <div class="inline-block px-4 py-1 bg-blue-600 text-white rounded-full text-xs font-black mb-4">PLAN ${DATA.organization.plan.toUpperCase()}</div>
                     <h3 class="text-4xl font-black text-slate-900 mb-2">$299<span class="text-lg text-slate-500">/mes</span></h3>
@@ -887,8 +917,8 @@ function renderSettings() {
                 <button onclick="notify('Gestión de suscripción próximamente')" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">Actualizar Plan</button>
             </div>
         </div>
-        <div class="bg-white rounded-3xl border p-8">
-            <h3 class="font-black text-lg mb-6">Equipo</h3>
+        <div class="bg-white rounded-2xl md:rounded-3xl border p-4 md:p-8">
+            <h3 class="font-black text-base md:text-lg mb-4 md:mb-6">Equipo</h3>
             <div class="space-y-4">
                 ${DATA.staff.map(s => `
                     <div class="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition">
@@ -911,6 +941,24 @@ function renderSettings() {
 }
 
 // --- GLOBAL UTILS ---
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('mobile-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById('mobile-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar && overlay) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+    }
+}
 
 function notify(msg) {
     const toast = document.getElementById('notification-toast');
