@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State 360 | Gestión Multifamily Perú</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+
+    <div id="app">
+        <div id="main-content"></div>
+    </div>
+
+    <!-- Contenedor de Modales -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div id="modal-content" class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-95 opacity-0"></div>
+    </div>
+
+    <!-- Notificaciones Toast -->
+    <div id="notification-toast" class="fixed bottom-5 right-5 z-[100] transform translate-y-20 transition-all duration-300 opacity-0 pointer-events-none">
+        <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+            <span id="notification-msg">Operación exitosa</span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
