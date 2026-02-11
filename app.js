@@ -262,7 +262,7 @@ function renderAppLayout(subview) {
         <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Estrategia</div>
         ${navItem('Análisis / KPIs', 'analytics', 'chart', subview)}
         <div class="text-[10px] font-bold text-slate-400 uppercase mt-6 mb-2 px-4 tracking-widest">Módulos</div>
-        ${navItem('Leads / CRM', 'leasing', 'users', subview)}
+        ${navItem('Leads', 'leasing', 'users', subview)}
         ${navItem('Propiedades', 'properties', 'building', subview)}
         ${navItem('Contratos', 'leases', 'billing', subview)}
         ${navItem('Cobranza', 'billing', 'billing', subview)}
@@ -529,15 +529,15 @@ function renderLeasing() {
     return `
         <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div>
-                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Pipeline de Leasing</h1>
-                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leads.length} leads activos en proceso</p>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Leads</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leads.length} leads activos en el pipeline</p>
             </div>
-            <button onclick="notify('Función de agregar lead próximamente')" class="self-start px-5 md:px-6 py-2.5 md:py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm md:text-base">+ Nuevo Lead</button>
+            <button onclick="openModal('lead')" class="self-start px-5 md:px-6 py-2.5 md:py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm md:text-base">✨ Nuevo Lead</button>
         </div>
 
         <div class="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
             ${stages.map(stage => `
-                <div class="kanban-column flex-shrink-0">
+                <div class="kanban-column flex-shrink-0" data-stage="${stage}" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                     <div class="bg-white rounded-2xl border-2 ${stageColors[stage]} overflow-hidden">
                         <div class="p-4 border-b">
                             <h3 class="font-black text-sm uppercase tracking-wider text-slate-700">${stage}</h3>
@@ -545,9 +545,13 @@ function renderLeasing() {
                         </div>
                         <div class="p-3 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
                             ${leadsByStage[stage].length === 0 ? `
-                                <div class="text-center py-8 text-slate-300 text-sm font-medium">Sin leads</div>
+                                <div class="text-center py-8 text-slate-300 text-sm font-medium">Arrastra leads aquí</div>
                             ` : leadsByStage[stage].map(lead => `
-                                <div class="bg-white p-4 rounded-xl border border-slate-200 hover:shadow-lg transition cursor-pointer" onclick="notify('Ver detalle de ${lead.name}')">
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 hover:shadow-lg transition cursor-move" 
+                                     draggable="true" 
+                                     data-lead-id="${lead.id}" 
+                                     ondragstart="handleDragStart(event)" 
+                                     ondragend="handleDragEnd(event)">
                                     <div class="flex items-start justify-between mb-3">
                                         <h4 class="font-bold text-slate-900 text-sm">${lead.name}</h4>
                                         <span class="text-[10px] font-black text-slate-400">#${lead.id}</span>
@@ -606,13 +610,20 @@ function renderLeasing() {
 
 function renderProperties() {
     return `
-        <h2 class="text-xl md:text-2xl font-bold mb-4">Propiedades</h2>
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900">Propiedades</h2>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.properties.length} propiedades registradas</p>
+            </div>
+            <button onclick="openModal('property')" class="self-start px-5 md:px-6 py-2.5 md:py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm md:text-base">🏢 Nueva Propiedad</button>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
             ${DATA.properties.map(p => `
-                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
+                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm hover:shadow-lg transition cursor-pointer" onclick="notify('Ver detalle de ${p.name}')">
                     <img src="${p.img}" class="h-32 w-full object-cover rounded-xl md:rounded-2xl mb-4">
                     <h3 class="font-bold text-lg md:text-xl">${p.name}</h3>
                     <p class="text-slate-500 font-medium text-sm md:text-base">${p.address}</p>
+                    <p class="text-xs text-slate-400 mt-2">${p.unitsCount} unidades</p>
                 </div>
             `).join('')}
         </div>
@@ -629,6 +640,7 @@ function renderUnits() {
                 <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.units.length} unidades en total</p>
             </div>
             <div class="flex gap-2 md:gap-3 flex-wrap">
+                <button onclick="openModal('unit')" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">🏠 Nueva Unidad</button>
                 ${Badge(DATA.units.filter(u => u.status === 'Ocupada').length + ' Ocupadas', 'green')}
                 ${Badge(DATA.units.filter(u => u.status === 'Disponible').length + ' Disponibles', 'blue')}
                 ${Badge(DATA.units.filter(u => u.status === 'Mantenimiento').length + ' Mantenimiento', 'yellow')}
@@ -669,9 +681,12 @@ function renderUnits() {
 
 function renderLeases() {
     return `
-        <div class="mb-6 md:mb-8">
-            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
-            <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leases.length} contratos activos</p>
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Contratos de Arrendamiento</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.leases.length} contratos activos</p>
+            </div>
+            <button onclick="openModal('lease')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">📝 Nuevo Contrato</button>
         </div>
         <div class="grid grid-cols-1 gap-4 md:gap-6">
             ${DATA.leases.map(lease => `
@@ -799,9 +814,12 @@ function renderCommunity() {
     const openTickets = DATA.tickets.filter(t => t.status === 'Abierto' || t.status === 'En Progreso');
 
     return `
-        <div class="mb-6 md:mb-8">
-            <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
-            <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Comunidad y Soporte</h1>
+                <p class="text-slate-500 font-medium text-sm md:text-base">${DATA.tickets.length} tickets en total • ${openTickets.length} abiertos</p>
+            </div>
+            <button onclick="openModal('ticket')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">🎫 Nuevo Ticket</button>
         </div>
         <div class="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
             <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border shadow-sm">
@@ -1205,7 +1223,7 @@ function renderResidentCommunity() {
                 <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-2">Soporte</h1>
                 <p class="text-slate-500 font-medium text-sm md:text-base">Mis tickets y solicitudes de mantenimiento</p>
             </div>
-            <button onclick="notify('Crear nuevo ticket próximamente')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">+ Nuevo Ticket</button>
+            <button onclick="openModal('ticket')" class="self-start px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition text-sm">🎫 Nuevo Ticket</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3 md:gap-6 mb-6 md:mb-8">
@@ -1470,6 +1488,321 @@ function renderAdminReservations() {
             </div>
         </div>
     `;
+}
+
+// --- DRAG & DROP ---
+
+let draggedLeadId = null;
+
+function handleDragStart(event) {
+    draggedLeadId = event.target.dataset.leadId;
+    event.target.classList.add('dragging');
+    event.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(event) {
+    event.target.classList.remove('dragging');
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    const column = event.target.closest('.kanban-column');
+    if (column) column.classList.add('drag-over');
+}
+
+function handleDragLeave(event) {
+    const column = event.target.closest('.kanban-column');
+    if (column && !column.contains(event.relatedTarget)) {
+        column.classList.remove('drag-over');
+    }
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    const column = event.target.closest('.kanban-column');
+    if (!column) return;
+    
+    column.classList.remove('drag-over');
+    const newStage = column.dataset.stage;
+    
+    // Actualizar el stage del lead en DATA
+    const lead = DATA.leads.find(l => l.id === parseInt(draggedLeadId));
+    if (lead && lead.stage !== newStage) {
+        lead.stage = newStage;
+        notify(`Lead movido a: ${newStage}`);
+        // Re-renderizar la vista
+        const hash = window.location.hash;
+        Router.handleRoute();
+    }
+}
+
+// --- MODAL SYSTEM ---
+
+function openModal(type, data = {}) {
+    const forms = {
+        lead: {
+            title: '✨ Nuevo Lead',
+            icon: '👤',
+            fields: [
+                { name: 'name', label: 'Nombre Completo', type: 'text', placeholder: 'Ej: Juan Pérez Rodriguez', required: true },
+                { name: 'email', label: 'Email', type: 'email', placeholder: 'ejemplo@mail.com', required: true },
+                { name: 'phone', label: 'Teléfono', type: 'tel', placeholder: '987 654 321', required: true },
+                { name: 'unit', label: 'Unidad de Interés', type: 'select', options: DATA.units.map(u => u.code), required: true },
+                { name: 'stage', label: 'Etapa Inicial', type: 'select', options: ['Nuevo', 'Visita', 'Aplicación', 'Aprobado'], required: true },
+                { name: 'notes', label: 'Notas', type: 'textarea', placeholder: 'Información adicional del lead...' }
+            ],
+            submitText: 'Crear Lead',
+            onSubmit: 'handleLeadSubmit'
+        },
+        property: {
+            title: '🏢 Nueva Propiedad',
+            icon: '🏛️',
+            fields: [
+                { name: 'name', label: 'Nombre de la Propiedad', type: 'text', placeholder: 'Ej: Torre Miraflores', required: true },
+                { name: 'address', label: 'Dirección', type: 'text', placeholder: 'Av. Larco 123', required: true },
+                { name: 'district', label: 'Distrito', type: 'text', placeholder: 'Miraflores', required: true },
+                { name: 'unitsCount', label: 'Número de Unidades', type: 'number', placeholder: '50', required: true },
+                { name: 'img', label: 'URL Imagen', type: 'text', placeholder: 'https://...', required: false }
+            ],
+            submitText: 'Crear Propiedad',
+            onSubmit: 'handlePropertySubmit'
+        },
+        unit: {
+            title: '🏠 Nueva Unidad',
+            icon: '🚪',
+            fields: [
+                { name: 'code', label: 'Código de Unidad', type: 'text', placeholder: 'Ej: 101-A', required: true },
+                { name: 'type', label: 'Tipo', type: 'select', options: ['Studio', '1B/1B', '2B/2B', '3B/2B', '3B/3B', 'Local Comercial'], required: true },
+                { name: 'property', label: 'Propiedad', type: 'select', options: DATA.properties.map(p => p.name), required: true },
+                { name: 'rent', label: 'Renta Mensual (S/)', type: 'number', placeholder: '2500', required: true },
+                { name: 'status', label: 'Estado', type: 'select', options: ['Disponible', 'Ocupada', 'Mantenimiento'], required: true }
+            ],
+            submitText: 'Crear Unidad',
+            onSubmit: 'handleUnitSubmit'
+        },
+        lease: {
+            title: '📝 Nuevo Contrato',
+            icon: '📜',
+            fields: [
+                { name: 'tenant', label: 'Nombre del Inquilino', type: 'text', placeholder: 'Roberto Gomez', required: true },
+                { name: 'unit', label: 'Unidad', type: 'select', options: DATA.units.filter(u => u.status === 'Disponible').map(u => u.code), required: true },
+                { name: 'start', label: 'Fecha Inicio', type: 'date', required: true },
+                { name: 'end', label: 'Fecha Fin', type: 'date', required: true },
+                { name: 'rent', label: 'Renta Mensual (S/)', type: 'number', placeholder: '2500', required: true },
+                { name: 'day', label: 'Día de Pago', type: 'number', placeholder: '5', min: '1', max: '28', required: true },
+                { name: 'status', label: 'Estado', type: 'select', options: ['Activo', 'Por Firmar', 'Finalizado'], required: true }
+            ],
+            submitText: 'Crear Contrato',
+            onSubmit: 'handleLeaseSubmit'
+        },
+        ticket: {
+            title: '🎫 Nuevo Ticket de Soporte',
+            icon: '🔧',
+            fields: [
+                { name: 'title', label: 'Título del Problema', type: 'text', placeholder: 'Ej: Fuga de agua baño', required: true },
+                { name: 'category', label: 'Categoría', type: 'select', options: ['Plomería', 'Eléctrico', 'Carpintería', 'Climatización', 'Limpieza', 'Seguridad', 'Otro'], required: true },
+                { name: 'priority', label: 'Prioridad', type: 'select', options: ['Baja', 'Media', 'Alta'], required: true },
+                { name: 'unit', label: 'Unidad', type: DATA.userRole === 'RESIDENTE' ? 'text' : 'select', options: DATA.userRole === 'STAFF' ? DATA.units.map(u => u.code) : [], value: DATA.userRole === 'RESIDENTE' ? DATA.resident.unit : '', required: true, readonly: DATA.userRole === 'RESIDENTE' },
+                { name: 'description', label: 'Descripción Detallada', type: 'textarea', placeholder: 'Describe el problema con el mayor detalle posible...', required: true }
+            ],
+            submitText: 'Crear Ticket',
+            onSubmit: 'handleTicketSubmit'
+        }
+    };
+
+    const form = forms[type];
+    if (!form) return;
+
+    const modalHTML = `
+        <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeIn" onclick="if(event.target === this) closeModal()">
+            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-slideUp">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white relative">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">${form.icon}</div>
+                        <div>
+                            <h2 class="text-2xl font-black">${form.title}</h2>
+                            <p class="text-white/80 text-sm">Completa los campos requeridos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form id="dynamicForm" onsubmit="${form.onSubmit}(event); return false;" class="p-6 overflow-y-auto" style="max-height: calc(90vh - 180px);">
+                    <div class="space-y-5">
+                        ${form.fields.map(field => {
+                            if (field.type === 'textarea') {
+                                return `
+                                    <div class="form-group">
+                                        <label class="block text-sm font-black text-slate-700 mb-2">
+                                            ${field.label} ${field.required ? '<span class="text-rose-500">*</span>' : ''}
+                                        </label>
+                                        <textarea 
+                                            name="${field.name}" 
+                                            placeholder="${field.placeholder || ''}" 
+                                            ${field.required ? 'required' : ''}
+                                            rows="4"
+                                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition font-medium text-slate-900 placeholder-slate-400"
+                                        ></textarea>
+                                    </div>
+                                `;
+                            } else if (field.type === 'select') {
+                                return `
+                                    <div class="form-group">
+                                        <label class="block text-sm font-black text-slate-700 mb-2">
+                                            ${field.label} ${field.required ? '<span class="text-rose-500">*</span>' : ''}
+                                        </label>
+                                        <select 
+                                            name="${field.name}" 
+                                            ${field.required ? 'required' : ''}
+                                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition font-bold text-slate-900 bg-white"
+                                        >
+                                            <option value="">Seleccionar...</option>
+                                            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    <div class="form-group">
+                                        <label class="block text-sm font-black text-slate-700 mb-2">
+                                            ${field.label} ${field.required ? '<span class="text-rose-500">*</span>' : ''}
+                                        </label>
+                                        <input 
+                                            type="${field.type}" 
+                                            name="${field.name}" 
+                                            placeholder="${field.placeholder || ''}" 
+                                            ${field.required ? 'required' : ''}
+                                            ${field.value ? `value="${field.value}"` : ''}
+                                            ${field.readonly ? 'readonly' : ''}
+                                            ${field.min ? `min="${field.min}"` : ''}
+                                            ${field.max ? `max="${field.max}"` : ''}
+                                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition font-bold text-slate-900 placeholder-slate-400 ${field.readonly ? 'bg-slate-50' : ''}"
+                                        />
+                                    </div>
+                                `;
+                            }
+                        }).join('')}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3 mt-8 pt-6 border-t">
+                        <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition">
+                            ${form.submitText}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('modal-container').innerHTML = modalHTML;
+}
+
+function closeModal() {
+    document.getElementById('modal-container').innerHTML = '';
+}
+
+// --- FORM HANDLERS ---
+
+function handleLeadSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newLead = {
+        id: Math.max(...DATA.leads.map(l => l.id)) + 1,
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        unit: formData.get('unit'),
+        stage: formData.get('stage'),
+        date: new Date().toISOString().split('T')[0]
+    };
+    DATA.leads.push(newLead);
+    closeModal();
+    notify(`✅ Lead "${newLead.name}" creado exitosamente`);
+    Router.handleRoute();
+}
+
+function handlePropertySubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newProperty = {
+        id: Math.max(...DATA.properties.map(p => p.id)) + 1,
+        name: formData.get('name'),
+        address: formData.get('address'),
+        district: formData.get('district'),
+        unitsCount: parseInt(formData.get('unitsCount')),
+        img: formData.get('img') || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400'
+    };
+    DATA.properties.push(newProperty);
+    closeModal();
+    notify(`✅ Propiedad "${newProperty.name}" creada exitosamente`);
+    Router.handleRoute();
+}
+
+function handleUnitSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newUnit = {
+        id: Math.max(...DATA.units.map(u => u.id)) + 1,
+        code: formData.get('code'),
+        type: formData.get('type'),
+        property: formData.get('property'),
+        rent: parseInt(formData.get('rent')),
+        status: formData.get('status')
+    };
+    DATA.units.push(newUnit);
+    closeModal();
+    notify(`✅ Unidad "${newUnit.code}" creada exitosamente`);
+    Router.handleRoute();
+}
+
+function handleLeaseSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newLease = {
+        id: Math.max(...DATA.leases.map(l => l.id)) + 1,
+        tenant: formData.get('tenant'),
+        unit: formData.get('unit'),
+        start: formData.get('start'),
+        end: formData.get('end'),
+        rent: parseInt(formData.get('rent')),
+        day: parseInt(formData.get('day')),
+        status: formData.get('status')
+    };
+    DATA.leases.push(newLease);
+    // Actualizar status de la unidad
+    const unit = DATA.units.find(u => u.code === newLease.unit);
+    if (unit) unit.status = 'Ocupada';
+    closeModal();
+    notify(`✅ Contrato para "${newLease.tenant}" creado exitosamente`);
+    Router.handleRoute();
+}
+
+function handleTicketSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newTicket = {
+        id: Math.max(...DATA.tickets.map(t => t.id)) + 1,
+        title: formData.get('title'),
+        category: formData.get('category'),
+        priority: formData.get('priority'),
+        unit: formData.get('unit'),
+        resident: DATA.userRole === 'RESIDENTE' ? DATA.resident.name : 'Inquilino',
+        status: 'Abierto',
+        date: new Date().toISOString().split('T')[0]
+    };
+    DATA.tickets.push(newTicket);
+    closeModal();
+    notify(`✅ Ticket "${newTicket.title}" creado exitosamente`);
+    Router.handleRoute();
 }
 
 // --- GLOBAL UTILS ---

@@ -83,3 +83,57 @@ body {
         gap: 0.75rem;
     }
 }
+
+/* --- DRAG & DROP --- */
+.dragging {
+    opacity: 0.5;
+    transform: rotate(3deg);
+    cursor: grabbing !important;
+}
+
+.drag-over {
+    background-color: rgba(59, 130, 246, 0.05);
+    border-color: #3b82f6 !important;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+.kanban-column {
+    transition: all 0.2s ease;
+}
+
+/* --- MODAL ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* --- FORM STYLES --- */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input[readonly] {
+    cursor: not-allowed;
+}
